@@ -60,10 +60,10 @@ def main(argv=None):
     args=parser.parse_args()
    
     
-    time_obj=time.mktime(time.strptime(args.time_from,"%Y-%m-%d %H:%M"))
-    print(time_obj)
-    from_unix_time=datetime.datetime.fromtimestamp(time_obj)
-      
+    time_from = time.mktime(time.strptime(args.time_from,"%Y-%m-%d %H:%M"))
+    time_to   = time.mktime(time.strptime(args.time_to,"%Y-%m-%d %H:%M"))
+    
+     
 
     return 0
             
