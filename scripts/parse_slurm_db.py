@@ -8,6 +8,8 @@ import datetime
 import time
 import pwd
 
+import MySQLdb
+
 class Task_record(object):
     """
     Класс для хранения атрибутов задач, полученных
@@ -40,22 +42,68 @@ def main(argv=None):
     if argv == None:
         argv=sys.argv
     
-    parser= argparse.ArgumentParser(\
+    parser= argparse.ArgumentParser(
             description="""
             Данная программа делает выборку за некоторый период времени 
             из статистики запуска задач на вычислительном кластере 
             управляемым системой ведения очередей Slurm. 
             Результат помещается в несколько текстовых файлов.
-            """,\
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,\
-            epilog="Например можно запустить так:\n \""+sys.argv[0]\
+            """,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            epilog="Например можно запустить так:\n \""+sys.argv[0]
     )
     
-    parser.add_argument('--from',dest='time_from',required=True, help="Дата и время с которых выбирать статистику")
-    parser.add_argument('--to',dest='time_to', required=True, help="Дата и время до кoторых выбирать статистику")
-    parser.add_argument('--cluster',dest='cluster',required=True, help="Имя кластера в базе данных slurm")
-    parser.add_argument('--prefix',dest='prefix',required=False, default="./slurm_stat", help="префикс, по которому сохранять выборку")
-    parser.add_argument('--masquerade-users',dest='masquerade_users',required=False,default="yes", help="Если включено, все пользователи будут маскироваться под именами типа 'user123'")
+    parser.add_argument(
+           '--from',
+           dest='time_from',
+           required=True,
+           help="Дата и время с которых выбирать статистику: формат YYYY-MM-DD HH:MM "
+    )
+
+    parser.add_argument(
+            '--to',
+            dest='time_to',
+            required=True,
+            help="Дата и время до кoторых выбирать статистику: формат YYYY-MM-DD HH:MM"
+    )
+
+    parser.add_argument(
+            '--cluster',
+            dest='cluster',
+            required=True,
+            help="Имя кластера в базе данных slurm"
+    )
+
+    parser.add_argument(
+            '--prefix',
+            dest='prefix',
+            required=False,
+            default="./slurm_stat",
+            help="префикс, по которому сохранять выборку"
+    )
+
+    parser.add_argument(
+            '--db-passwd-file',
+            dest='db_passwd_file',
+            required=False,
+            default="db_passwd",
+            help="""
+                    Путь до файла с логином и паролём пользователя, 
+                    который имеет право просматривать базу данных slurm. 
+                    Формат login:password
+                 """
+    )
+    
+    parser.add_argument(
+            '--masquerade-users',
+            dest='masquerade_users',
+            required=False,
+            default="yes",
+            help="""
+                    Если включено, все пользователи будут маскироваться 
+                    под именами типа 'user123'
+                 """
+    )
     
     args=parser.parse_args()
    
@@ -63,8 +111,12 @@ def main(argv=None):
     time_from = time.mktime(time.strptime(args.time_from,"%Y-%m-%d %H:%M"))
     time_to   = time.mktime(time.strptime(args.time_to,"%Y-%m-%d %H:%M"))
     
-     
-
+    db_passwd_file=open(args.db_passwd_file,"r")
+    pair=db_passwd_file.readline().split(':')
+    db_login=pair[0].strip()
+    db_password=pair[1].strip()
+  
+    
     return 0
             
 
