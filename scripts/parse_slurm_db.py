@@ -24,7 +24,7 @@ class Task_record(object):
         self.user_name=None
         self.group_name=None
         self.time_limit=None
-        self.required_nodes=None
+        self.required_cpus=None
         self.partition=None
         self.task_state=None
         
@@ -93,7 +93,19 @@ def main(argv=None):
                     Формат login:password
                  """
     )
-    
+
+    parser.add_argument(
+            '--db-host',
+            dest='db_host_and_port',
+            required=False,
+            default="localhost",
+            help="""
+                    Имя хоста с базой данных slurm и номер порта.
+                    Если порт не указан, подставляется по умолчанию
+                    Формат host:port
+                 """
+    )
+   
     parser.add_argument(
             '--masquerade-users',
             dest='masquerade_users',
@@ -116,7 +128,53 @@ def main(argv=None):
     db_login=pair[0].strip()
     db_password=pair[1].strip()
   
+    pair=args.db_host_and_port.split(':')
+    db_host=pair[0].strip()
+    if len(pair) > 1:
+        db_port=pair[1].strip()
+    else:
+         db_port="3306"
     
+    if (db_host != "localhost") and (db_port == "") :
+        db_port="3306"
+
+    db=MySQLdb.connect(
+            host=db_host,
+            user=db_login,
+            passwd=db_password,
+            port=int(db_port),
+            db="slurm_acct_db"
+            )
+
+    cursor=db.cursor()
+
+    query=\
+    """
+        select
+            id_job,
+            job_name,
+            time_submit,
+            time_start,
+            time_end,
+            id_user,
+            id_group,
+            timelimit,
+            cpus_req,
+            nodes_alloc,
+            cpus_alloc,
+            partition,
+            state,
+            priority
+        from
+            %s_job_table
+        where
+            ( time_submit >= %d ) and (time_submit <= %d )
+      """ % (args.cluster, time_from, time_to)
+
+    cursor.execute(query)
+    print (cursor.fetchall())
+
+
     return 0
             
 
