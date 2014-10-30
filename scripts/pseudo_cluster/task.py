@@ -44,3 +44,51 @@ class Task_record(object):
         s+="other= "+str(self.other)
         return s
 
+    def print_header(self,file_pointer):
+        """
+        Печать заголовка, с которого начинается 
+        файл со статистикой.
+        """
+        s=""
+        s+="id\t"
+        s+="name\t"
+        s+="time_submit\t"
+        s+="time_start\t"
+        s+="time_end\t"
+        s+="user\t"
+        s+="group\t"
+        s+="time_limit\t"
+        s+="required_cpus\t"
+        s+="partition\t"
+        s+="priority\t"
+        s+="task_class\t"
+        s+="state\t"
+        s+="other\n"
+
+        return file_pointer.write(s)
+
+    def print_record(self,file_pointer):
+        """
+        Печать информации о задаче в файл
+        """
+        s=""    
+        s+="\"%s\"\t"    % self.job_id
+        s+="\"%s\"\t"    % self.job_name
+        s+="\"%s\"\t"    % self.time_submit
+        s+="\"%s\"\t"    % self.time_start
+        s+="\"%s\"\t"    % self.time_end
+        s+="\"%s\"\t"    % self.user_name
+        s+="\"%s\"\t"    % self.group_name
+        s+="%d\t"        % self.time_limit
+        s+="%d\t"        % self.required_cpus
+        s+="\"%s\"\t"    % self.partition
+        s+="%d\t"        % self.priority
+        s+="\"%s\"\t"    % self.task_class
+        s+="\"%s\"\t"    % self.task_state
+        for k,v in other:
+            s+="%s=\"%s\", " % (k,v)
+        s=s.strip(' ,')
+
+        return file_pointer.write(s)
+
+
