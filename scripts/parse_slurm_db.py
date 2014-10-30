@@ -10,30 +10,9 @@ import pwd
 
 import MySQLdb
 
-class Task_record(object):
-    """
-    Класс для хранения атрибутов задач, полученных
-    из файла со статистикой.
-    """
-    def __init__(self):
-        self.job_id=None
-        self.job_name=None
-        self.time_submit=None
-        self.time_start=None
-        self.time_end=None
-        self.user_name=None
-        self.group_name=None
-        self.time_limit=None
-        self.required_cpus=None
-        self.partition=None
-        self.task_state=None
-        
-        #
-        # Cловарь с прочими атрибутами, ассоциированными с задачей на кластере.
-        # ключ - имя атрибута, например имя поля в таблице [cluster_name]_job_table
-        #
-        self.other= {}   
-    
+from pseudo_cluster.task import  Task_record
+from pseudo_cluster.tasks_list import  Tasks_list
+
 
 def main(argv=None):
     """
@@ -160,11 +139,11 @@ def main(argv=None):
             id_group,
             timelimit,
             cpus_req,
-            nodes_alloc,
-            cpus_alloc,
             partition,
+            priority,
+            account,
             state,
-            priority
+            mem_req
         from
             %s_job_table
         where
@@ -172,8 +151,75 @@ def main(argv=None):
       """ % (args.cluster, time_from, time_to)
 
     cursor.execute(query)
-    print (cursor.fetchall())
+    #    print (cursor.fetchall())
+    
+    tasks_list=Tasks_list()
+    
+    #
+    # Эти состояния именно так упорядоченны
+    # в slurm.
+    #
+    slurm_task_states=\
+    [ "pending",
+      "running",
+      "suspended",
+      "completed",
+      "canceled",
+      "failed",
+      "time_left",
+      "node_fail" 
+    ]
+   
+    for row in cursor.fetchall():
+        task_record=Task_record()
+        
+        task_record.job_id   = row[0]
+        
+        task_record.job_name = row[1]
+        
+        datetime_obj=datetime.datetime.fromtimestamp(int(row[2]))
+        task_record.time_submit = datetime_obj.strftime("%Y-%m-%d %H:%M")
+        
+        datetime_obj=datetime.datetime.fromtimestamp(int(row[3]))
+        task_record.time_start = datetime_obj.strftime("%Y-%m-%d %H:%M")
+        
+        datetime_obj=datetime.datetime.fromtimestamp(int(row[4]))
+        task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
 
+        if args.masquerade_users:
+            task_record.user_name = "pseudo_cluster_user_%d"\
+                 % ( tasks_list.get_internal_user_id(row[5]) )
+            task_record.group_name = "pseudo_cluster_group_%d"\
+                 % ( tasks_list.get_internal_group_id(row[6]) )
+        else:
+            return 1
+
+        task_record.time_limit=int(row[7])
+        
+        task_record.required_cpus=int(row[8])
+
+        task_record.partition=row[9]
+
+        #TODO
+        # В текущей ситуации я не понимаю, как его грамотно о 
+        # туда выковорить, так, чтобы оставить только ту часть,
+        # которую указывал пользователь.
+        #
+        # В идеале здесь должно быть что-то вроде
+        # task_record.priority=function(row[10])
+        #
+        task_record.priority=0
+        
+        if row[11]:
+            task_record.task_class=row[11]
+        else:
+            task_record.task_class="pseudo_cluster_default"
+
+        task_record.task_state=slurm_task_states[int(row[12])]
+
+        task_record.other["memory_limit"]=int(row[13])
+        
+        print(task_record)
 
     return 0
             
