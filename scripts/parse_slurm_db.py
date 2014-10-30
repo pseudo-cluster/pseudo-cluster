@@ -89,7 +89,7 @@ def main(argv=None):
             '--masquerade-users',
             dest='masquerade_users',
             required=False,
-            default="yes",
+            default="Yes",
             help="""
                     Если включено, все пользователи будут маскироваться 
                     под именами типа 'user123'
@@ -186,7 +186,7 @@ def main(argv=None):
         datetime_obj=datetime.datetime.fromtimestamp(int(row[4]))
         task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
 
-        if args.masquerade_users:
+        if args.masquerade_users == "Yes":
             task_record.user_name = "pseudo_cluster_user_%d"\
                  % ( tasks_list.get_internal_user_id(row[5]) )
             task_record.group_name = "pseudo_cluster_group_%d"\
