@@ -1,5 +1,28 @@
 # -*- coding: utf-8 -*-
 
+def get_header_string():
+      """
+        Печать заголовка, с которого начинается 
+        файл со статистикой.
+      """
+      s=""
+      s+="\"id\"\t"
+      s+="\"name\"\t"
+      s+="\"time_submit\"\t"
+      s+="\"time_start\"\t"
+      s+="\"time_end\"\t"
+      s+="\"user\"\t"
+      s+="\"group\"\t"
+      s+="\"time_limit\"\t"
+      s+="\"required_cpus\"\t"
+      s+="\"partition\"\t"
+      s+="\"priority\"\t"
+      s+="\"task_class\"\t"
+      s+="\"state\"\t"
+      s+="other\n"
+      
+      return s
+
 class Task_record(object):
     """
     Класс для хранения атрибутов задач, полученных
@@ -44,30 +67,8 @@ class Task_record(object):
         s+="other= "+str(self.other)
         return s
 
-    def print_header(self,file_pointer):
-        """
-        Печать заголовка, с которого начинается 
-        файл со статистикой.
-        """
-        s=""
-        s+="id\t"
-        s+="name\t"
-        s+="time_submit\t"
-        s+="time_start\t"
-        s+="time_end\t"
-        s+="user\t"
-        s+="group\t"
-        s+="time_limit\t"
-        s+="required_cpus\t"
-        s+="partition\t"
-        s+="priority\t"
-        s+="task_class\t"
-        s+="state\t"
-        s+="other\n"
 
-        return file_pointer.write(s)
-
-    def print_record(self,file_pointer):
+    def print_record_to_file(self,file_pointer):
         """
         Печать информации о задаче в файл
         """
@@ -85,9 +86,14 @@ class Task_record(object):
         s+="%d\t"        % self.priority
         s+="\"%s\"\t"    % self.task_class
         s+="\"%s\"\t"    % self.task_state
-        for k,v in other:
-            s+="%s=\"%s\", " % (k,v)
-        s=s.strip(' ,')
+
+        subs=""
+        for k in self.other.keys():
+            subs+="%s='%s', " % (k,self.other[k])
+        subs=subs.strip(' ,')
+
+        s+="\"%s\"\n"    % subs
+
 
         return file_pointer.write(s)
 

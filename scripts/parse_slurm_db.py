@@ -57,7 +57,7 @@ def main(argv=None):
             '--prefix',
             dest='prefix',
             required=False,
-            default="./slurm_stat",
+            default="./",
             help="префикс, по которому сохранять выборку"
     )
 
@@ -187,10 +187,11 @@ def main(argv=None):
         task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
 
         if args.masquerade_users == "Yes":
-            task_record.user_name = "pseudo_cluster_user_%d"\
-                 % ( tasks_list.get_internal_user_id(row[5]) )
-            task_record.group_name = "pseudo_cluster_group_%d"\
-                 % ( tasks_list.get_internal_group_id(row[6]) )
+            user_id  = tasks_list.get_internal_user_id(row[5])
+            group_id = tasks_list.get_internal_group_id(row[6])
+            task_record.user_name = "pseudo_cluster_user_%d"   % user_id
+            task_record.group_name = "pseudo_cluster_group_%d" % group_id
+            tasks_list.register_user_in_group(user_id, group_id )
         else:
             return 1
 
@@ -218,8 +219,9 @@ def main(argv=None):
         task_record.task_state=slurm_task_states[int(row[12])]
 
         task_record.other["memory_limit"]=int(row[13])
-        
-        print(task_record)
+        tasks_list.add_task_record(task_record)
+
+    tasks_list.print_to_files(args.prefix)
 
     return 0
             
