@@ -7,6 +7,7 @@ import argparse
 import datetime
 import time
 import pwd
+import grp
 
 import MySQLdb
 
@@ -95,7 +96,18 @@ def main(argv=None):
                     под именами типа 'user123'
                  """
     )
-    
+
+    parser.add_argument(
+            '--extract-logins',
+            dest='extract_real_names',
+            required=False,
+            default="Yes",
+            help="""
+                    Если включено, для всех пользователей и групп по 
+                    идентификаторам будут искаться их имена.
+                 """
+    )
+
     args=parser.parse_args()
    
     
@@ -185,15 +197,34 @@ def main(argv=None):
         
         datetime_obj=datetime.datetime.fromtimestamp(int(row[4]))
         task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
+        
+        
+        user_name=row[5]
+        group_name=row[6]
+        
+        if args.extract_real_names == "Yes":
+            try:
+                user_touple=pwd.getpwuid(int(row[5]))
+                user_name=user_touple[0]
+                #print (user_name)
+            except KeyError, e:
+                pass
+
+            try:
+                group_touple=grp.getgrgid(int(row[6]))
+                group_name=group_touple[0]
+                #print (group_name)
+            except KeyError, e:
+                pass
+                
 
         if args.masquerade_users == "Yes":
-            user_id  = tasks_list.get_internal_user_id(row[5])
-            group_id = tasks_list.get_internal_group_id(row[6])
+            user_id  = tasks_list.get_internal_user_id(user_name)
+            group_id = tasks_list.get_internal_group_id(group_name)
             task_record.user_name  = tasks_list.get_user_name_by_id(user_id)
             task_record.group_name = tasks_list.get_group_name_by_id(group_id)
             tasks_list.register_user_in_group(user_id, group_id )
-        else:
-            return 1
+        
 
         task_record.time_limit=int(row[7])
         
