@@ -28,6 +28,8 @@ class Tasks_list(object):
          # словарь множеств.
          #
          self.user_groups_relations={}
+         self.real_user_fake_groups={}
+         self.fake_user_real_groups={}
          #
          #  список задач.
          #
@@ -59,23 +61,40 @@ class Tasks_list(object):
         
         return internal_id
 
-    def register_user_in_group(self,user_id,group_id):
+    def register_user_in_group(self, user_id, group_id, internal_user=True, internal_group=True):
         """
             Добавляет ассоциацию пользователь группа,
             если такой ассоциации до этого небыло
         """
-        groups_set=self.user_groups_relations.get(user_id)
-        if groups_set == None:
-            groups_set=set()
-        if group_id not in groups_set:
-            groups_set.add(group_id)
-        #TODO
-        #
-        # Возможно в этом месте оно будет копировать
-        # множества, вместо того, чтобы 
-        # если множестсва одни и те же, оставить как есть. 
-        #
-        self.user_groups_relations[user_id]= groups_set
+        if internal_user and internal_group:
+            groups_set=self.user_groups_relations.get(user_id)
+            if groups_set == None:
+                groups_set=set()
+            if group_id not in groups_set:
+                groups_set.add(group_id)
+            #TODO
+            #
+            # Возможно в этом месте оно будет копировать
+            # множества, вместо того, чтобы 
+            # если множестсва одни и те же, оставить как есть. 
+            #
+            self.user_groups_relations[user_id]= groups_set
+
+        if not internal_user and internal_group:
+            groups_set=self.real_user_fake_groups.get(user_id)
+            if groups_set == None:
+                groups_set=set()
+            if group_id not in groups_set:
+                groups_set.add(group_id)
+            self.real_user_fake_groups[user_id] = groups_set
+            
+        if internal_user and not internal_group:
+            groups_set=self.fake_user_real_groups.get(user_id)
+            if groups_set == None:
+                groups_set=set()
+            if group_id not in groups_set:
+                groups_set.add(group_id)
+            self.fake_user_real_groups[user_id] = groups_set
 
     def get_user_name_by_id(self,user_id):
         """
@@ -121,11 +140,28 @@ class Tasks_list(object):
         f.close()
 
         f=open(file_system_prefix+"user_in_groups_map","w")
-        for user_id,groups in self.user_groups_relations.items():
+       
+        internal_users_set=set()
+        internal_users_set.update(self.user_groups_relations.keys())
+        internal_users_set.update(self.fake_user_real_groups.keys())
+
+        for user_id in internal_users_set:
             s=self.get_user_name_by_id(user_id)+":"
+            groups=self.user_groups_relations.get(user_id)
+            if groups:
+                for group_id in groups:
+                    s+=self.get_group_name_by_id(group_id)+","
+            groups=self.fake_user_real_groups.get(user_id)
+            if groups:
+                for group in groups:
+                    s+=group+","
+            f.write("%s\n" % s.strip(" ,"))
+        for user,group_id in self.real_user_fake_groups.items():
+            s=user+":"
             for group_id in groups:
                 s+=self.get_group_name_by_id(group_id)+","
             f.write("%s\n" % s.strip(" ,"))
+
         f.close()
 
 

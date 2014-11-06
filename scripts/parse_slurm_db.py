@@ -199,32 +199,66 @@ def main(argv=None):
         task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
         
         
-        user_name=row[5]
-        group_name=row[6]
+        user_id=int(row[5])
+        group_id=int(row[6])
+
+        internal_user_id=None
+        internal_group_id=None
         
         if args.extract_real_names == "Yes":
             try:
-                user_touple=pwd.getpwuid(int(row[5]))
+                user_touple=pwd.getpwuid(user_id)
                 user_name=user_touple[0]
                 #print (user_name)
             except KeyError, e:
-                pass
+                internal_user_id=tasks_list.get_internal_user_id(user_id)
+                user_name=str(user_id)
 
             try:
-                group_touple=grp.getgrgid(int(row[6]))
+                group_touple=grp.getgrgid(group_id)
                 group_name=group_touple[0]
                 #print (group_name)
             except KeyError, e:
-                pass
+                internal_group_id=tasks_list.get_internal_group_id(group_id)
+                group_name=str(group_id)
+        else:
+            user_name=row[5]
+            group_name=row[6]
                 
 
         if args.masquerade_users == "Yes":
-            user_id  = tasks_list.get_internal_user_id(user_name)
-            group_id = tasks_list.get_internal_group_id(group_name)
-            task_record.user_name  = tasks_list.get_user_name_by_id(user_id)
-            task_record.group_name = tasks_list.get_group_name_by_id(group_id)
-            tasks_list.register_user_in_group(user_id, group_id )
-        
+            internal_user_id  = tasks_list.get_internal_user_id(user_name)
+            internal_group_id = tasks_list.get_internal_group_id(group_name)
+            task_record.user_name  = tasks_list.get_user_name_by_id(internal_user_id)
+            task_record.group_name = tasks_list.get_group_name_by_id(internal_group_id)
+            tasks_list.register_user_in_group(internal_user_id, internal_group_id )           
+        else:
+            if internal_user_id:
+                task_record.user_name  = tasks_list.get_user_name_by_id(internal_user_id)
+                if internal_group_id:
+                    tasks_list.register_user_in_group(internal_user_id, internal_group_id )
+                else:
+                    tasks_list.register_user_in_group(
+                            internal_user_id, 
+                            group_name, 
+                            internal_group=False
+                    )
+            else:
+                task_record.user_name = user_name
+
+            if internal_group_id:
+                task_record.group_name = tasks_list.get_group_name_by_id(internal_group_id)
+                if internal_user_id:
+                    tasks_list.register_user_in_group(internal_user_id, internal_group_id )
+                else:
+                    tasks_list.register_user_in_group(
+                            user_name,
+                            internal_group_id,
+                            internal_user=False
+                    )
+            else:
+                task_record.group_name = group_name
+                      
 
         task_record.time_limit=int(row[7])
         
@@ -233,7 +267,7 @@ def main(argv=None):
         task_record.partition=row[9]
 
         #TODO
-        # В текущей ситуации я не понимаю, как его грамотно о 
+        # В текущей ситуации я не понимаю, как его грамотно от
         # туда выковорить, так, чтобы оставить только ту часть,
         # которую указывал пользователь.
         #
