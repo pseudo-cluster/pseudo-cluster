@@ -9,6 +9,8 @@ class Tasks_list(object):
         ведения очередей кластера
     """
     def __init__(self):
+         self.user_name_pattern="pseudo_cluster_user_"
+         self.group_name_pattern="pseudo_cluster_group_"
          #
          #   Множество отображений: 
          #   пользователь на кластере --> порядковый номер, 
@@ -69,11 +71,26 @@ class Tasks_list(object):
             groups_set.add(group_id)
         #TODO
         #
-        # Возможно в этом месте оно будет комировать
+        # Возможно в этом месте оно будет копировать
         # множества, вместо того, чтобы 
         # если множестсва одни и те же, оставить как есть. 
         #
         self.user_groups_relations[user_id]= groups_set
+
+    def get_user_name_by_id(self,user_id):
+        """
+            получает имя пользователя в соответствии 
+            с образцом по его идентификатору
+        """
+        return self.user_name_pattern+str(user_id)
+
+    def get_group_name_by_id(self,group_id):
+        """
+            получает имя группы в соответствии с 
+            образцом по её идентификатору
+        """
+        return self.group_name_pattern+str(group_id)
+
 
     def add_task_record(self,record):
         """
@@ -81,9 +98,9 @@ class Tasks_list(object):
         """
         #TODO Вставить сюда проверку соответствия типов
         #
-        self.tasks_list.append(record)
+        self.tasks_list.append(record)    
 
-    def print_to_files(self,file_system_prefix):
+    def print_to_files(self, file_system_prefix):
         """
          Печатает всё в файловую систему
         """
@@ -92,7 +109,23 @@ class Tasks_list(object):
         for tsk in self.tasks_list:
             tsk.print_record_to_file(f)
         f.close()
+        
+        f=open(file_system_prefix+"users_map","w")
+        for k,v in self.users_map.items():
+            f.write("%s:%s\n" % (self.get_user_name_by_id(v),k))
+        f.close()
 
+        f=open(file_system_prefix+"groups_map","w")
+        for k,v in self.groups_map.items():
+            f.write("%s:%s\n" % (self.get_group_name_by_id(v),k))
+        f.close()
 
-    
+        f=open(file_system_prefix+"user_in_groups_map","w")
+        for user_id,groups in self.user_groups_relations.items():
+            s=self.get_user_name_by_id(user_id)+":"
+            for group_id in groups:
+                s+=self.get_group_name_by_id(group_id)+","
+            f.write("%s\n" % s.strip(" ,"))
+        f.close()
+
 

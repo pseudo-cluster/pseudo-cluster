@@ -189,8 +189,8 @@ def main(argv=None):
         if args.masquerade_users == "Yes":
             user_id  = tasks_list.get_internal_user_id(row[5])
             group_id = tasks_list.get_internal_group_id(row[6])
-            task_record.user_name = "pseudo_cluster_user_%d"   % user_id
-            task_record.group_name = "pseudo_cluster_group_%d" % group_id
+            task_record.user_name  = tasks_list.get_user_name_by_id(user_id)
+            task_record.group_name = tasks_list.get_group_name_by_id(group_id)
             tasks_list.register_user_in_group(user_id, group_id )
         else:
             return 1
