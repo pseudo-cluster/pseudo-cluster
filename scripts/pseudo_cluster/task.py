@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import time
+
 def get_header_string():
       """
         Печать заголовка, с которого начинается 
@@ -97,4 +99,39 @@ class Task_record(object):
 
         return file_pointer.write(s)
 
+    def read_record_from_file(self,file_pointer):
+        """
+          Читает запись информацию о задаче из файла.
+             в случае успеха возвращает True,
+             иначе False.
+        """
+        try:
+            row=file_pointer.readline()
+        except:
+            return False
+        
+        tupl=row.split('\t')
+        
+        self.job_id        = tupl[0].strip('"')
+        self.job_name      = tupl[1].strip('"')
+        #TODO in future
+        #self.time_submit   = time.mktime(time.strptime(tupl[2].strip('"'),"%Y-%m-%d %H:%M"))
+        #self.time_start    = time.mktime(time.strptime(tupl[3].strip('"'),"%Y-%m-%d %H:%M"))
+        #self.time_end      = time.mktime(time.strptime(tupl[4].strip('"'),"%Y-%m-%d %H:%M"))
+        self.time_submit   = tupl[2].strip('"')
+        self.time_start    = tupl[3].strip('"')
+        self.time_end      = tupl[4].strip('"')
+        self.user_name     = tupl[5].strip('"')
+        self.group_name    = tupl[6].strip('"')
+        self.time_limit    = int(tupl[7])
+        self.required_cpus = int(tupl[8])
+        self.partition     = tupl[9].strip('"')
+        self.priority      = int (tupl[10])
+        self.task_class    = tupl[11].strip('"')
+        self.task_state    = tupl[12].strip('"')
+        
+        for item in tupl[12].strip('"').split(','):
+            pair=item.strip().split('=')
+            self.other[pair[0]]=pair[1].strip("'")
 
+        return True
