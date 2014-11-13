@@ -189,15 +189,15 @@ def main(argv=None):
         
         task_record.job_name = row[1]
         
-        datetime_obj=datetime.datetime.fromtimestamp(int(row[2]))
-        task_record.time_submit = datetime_obj.strftime("%Y-%m-%d %H:%M")
+        #datetime_obj=datetime.datetime.fromtimestamp(int(row[2]))
+        #task_record.time_submit = datetime_obj.strftime("%Y-%m-%d %H:%M")
+      
+        task_record.time_submit = datetime.datetime.fromtimestamp(int(row[2]))
+       
+        task_record.time_start = datetime.datetime.fromtimestamp(int(row[3]))
         
-        datetime_obj=datetime.datetime.fromtimestamp(int(row[3]))
-        task_record.time_start = datetime_obj.strftime("%Y-%m-%d %H:%M")
-        
-        datetime_obj=datetime.datetime.fromtimestamp(int(row[4]))
-        task_record.time_end = datetime_obj.strftime("%Y-%m-%d %H:%M")
-        
+        task_record.time_end = datetime.datetime.fromtimestamp(int(row[4]))
+       
         
         user_id=int(row[5])
         group_id=int(row[6])

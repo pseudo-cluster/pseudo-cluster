@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time
+import datetime
 
 def get_header_string():
       """
@@ -55,9 +55,9 @@ class Task_record(object):
         s="Class Task_record(object): "    
         s+="job_id='%s', "         % self.job_id
         s+="job_name='%s', "       % self.job_name
-        s+="time_submit='%s', "    % self.time_submit
-        s+="time_start='%s',  "    % self.time_start
-        s+="time_end='%s', "       % self.time_end
+        s+="time_submit='%s', "    % self.time_submit.strftime("%Y-%m-%d %H:%M")
+        s+="time_start='%s',  "    % self.time_start.strftime("%Y-%m-%d %H:%M")
+        s+="time_end='%s', "       % self.time_end.strftime("%Y-%m-%d %H:%M")
         s+="user_name='%s', "      % self.user_name
         s+="group_name='%s', "     % self.group_name
         s+="time_limit=%d, "       % self.time_limit
@@ -77,9 +77,9 @@ class Task_record(object):
         s=""    
         s+="\"%s\"\t"    % self.job_id
         s+="\"%s\"\t"    % self.job_name
-        s+="\"%s\"\t"    % self.time_submit
-        s+="\"%s\"\t"    % self.time_start
-        s+="\"%s\"\t"    % self.time_end
+        s+="\"%s\"\t"    % self.time_submit.strftime("%Y-%m-%d %H:%M")
+        s+="\"%s\"\t"    % self.time_start.strftime("%Y-%m-%d %H:%M")
+        s+="\"%s\"\t"    % self.time_end.strftime("%Y-%m-%d %H:%M")
         s+="\"%s\"\t"    % self.user_name
         s+="\"%s\"\t"    % self.group_name
         s+="%d\t"        % self.time_limit
@@ -114,13 +114,12 @@ class Task_record(object):
         
         self.job_id        = tupl[0].strip('"')
         self.job_name      = tupl[1].strip('"')
-        #TODO in future
-        #self.time_submit   = time.mktime(time.strptime(tupl[2].strip('"'),"%Y-%m-%d %H:%M"))
-        #self.time_start    = time.mktime(time.strptime(tupl[3].strip('"'),"%Y-%m-%d %H:%M"))
-        #self.time_end      = time.mktime(time.strptime(tupl[4].strip('"'),"%Y-%m-%d %H:%M"))
-        self.time_submit   = tupl[2].strip('"')
-        self.time_start    = tupl[3].strip('"')
-        self.time_end      = tupl[4].strip('"')
+        self.time_submit   = datetime.datetime.strptime(tupl[2].strip('"'),"%Y-%m-%d %H:%M")
+        self.time_start    = datetime.datetime.strptime(tupl[3].strip('"'),"%Y-%m-%d %H:%M")
+        self.time_end      = datetime.datetime.strptime(tupl[4].strip('"'),"%Y-%m-%d %H:%M")
+        #self.time_submit   = tupl[2].strip('"')
+        #self.time_start    = tupl[3].strip('"')
+        #self.time_end      = tupl[4].strip('"')
         self.user_name     = tupl[5].strip('"')
         self.group_name    = tupl[6].strip('"')
         self.time_limit    = int(tupl[7])
