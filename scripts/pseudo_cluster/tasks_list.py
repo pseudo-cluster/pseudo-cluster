@@ -164,4 +164,13 @@ class Tasks_list(object):
 
         f.close()
 
+    def read_statistics_from_file(self,file_system_prefix):
+        f=open(file_system_prefix+"statistics.csv","r")
+        f.readline()
+        tsk=task.Task_record()
+        while tsk.read_record_from_file(f):
+            self.tasks_list.append(tsk)
+            print tsk
+        f.close()
+        
 

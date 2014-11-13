@@ -111,6 +111,8 @@ class Task_record(object):
             return False
         
         tupl=row.split('\t')
+        if len(tupl) < 13:
+            return False
         
         self.job_id        = tupl[0].strip('"')
         self.job_name      = tupl[1].strip('"')
@@ -129,8 +131,9 @@ class Task_record(object):
         self.task_class    = tupl[11].strip('"')
         self.task_state    = tupl[12].strip('"')
         
-        for item in tupl[12].strip('"').split(','):
+        for item in tupl[13].strip('"').split(','):
             pair=item.strip().split('=')
-            self.other[pair[0]]=pair[1].strip("'")
+            self.other[pair[0]]=pair[1].strip("'\"")
+            
 
         return True
