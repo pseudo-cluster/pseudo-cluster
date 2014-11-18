@@ -262,7 +262,7 @@ def main(argv=None):
         time_limit=int(row[7])
         task_record.time_limit=0
 
-        if time_limit < 0xFFFFFFFF:
+        if time_limit < (0xFFFFFFFF-1):
             task_record.time_limit=time_limit
         
         task_record.required_cpus=int(row[8])
