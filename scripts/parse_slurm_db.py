@@ -259,8 +259,11 @@ def main(argv=None):
             else:
                 task_record.group_name = group_name
                       
+        time_limit=int(row[7])
+        task_record.time_limit=0
 
-        task_record.time_limit=int(row[7])
+        if time_limit < 0xFFFFFFFF:
+            task_record.time_limit=time_limit
         
         task_record.required_cpus=int(row[8])
 
