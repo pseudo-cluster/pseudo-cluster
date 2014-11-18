@@ -15,8 +15,15 @@ class Scheduled_action(object):
         """
         Ставит задачу в очередь c учётом коэффициента компрессии времени
         """
-        time_limit=self.extended_task_record.time_limit/float(time_compression)
-        s=self.extended_task_record.get_submit_string(time_limit)
+        time_limit=self.extended_task_record.time_limit
+        if time_limit >0:
+            time_limit=round(time_limit/float(time_compression))
+            if time_limit == 0:
+                time_limit=1
+        
+        duration=extended_task_record.time_end-extended_task_record.time_start
+        
+        s=self.extended_task_record.get_submit_string(time_limit,duration.total_seconds())
         #TODO
         #
         # Здесь должен быть fork(), setuid(), setgit()

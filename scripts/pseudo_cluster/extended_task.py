@@ -16,5 +16,18 @@ class Extended_task_record(task.Task_record):
         #
         # дописать копирование задачи
         #
-
-
+        self.job_id=task_record.job_id
+        self.job_name=task_record.job_name
+        self.time_submit=task_record.time_submit
+        self.time_start=task_record.time_start
+        self.time_end=task_record.time_end
+        self.user_name=task_record.user_name
+        self.group_name=task_record.group_name
+        self.time_limit=task_record.time_limit
+        self.required_cpus=task_record.required_cpus
+        self.partition=task_record.partition
+        self.priority=task_record.priority
+        self.task_class=task_record.task_class
+        self.task_state=task_record.task_state
+        self.other=task_record.other.copy()
+    
