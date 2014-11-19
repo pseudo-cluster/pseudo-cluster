@@ -11,7 +11,7 @@ import grp
 
 import MySQLdb
 
-from pseudo_cluster.task import  Task_record
+from pseudo_cluster.task import  Task_record, TASK_STATES
 from pseudo_cluster.tasks_list import  Tasks_list
 
 
@@ -171,17 +171,8 @@ def main(argv=None):
     # Эти состояния именно так упорядоченны
     # в slurm.
     #
-    slurm_task_states=\
-    [ "pending",
-      "running",
-      "suspended",
-      "completed",
-      "canceled",
-      "failed",
-      "time_left",
-      "node_fail" 
-    ]
-   
+    slurm_task_states=TASK_STATES
+       
     for row in cursor.fetchall():
         task_record=Task_record()
         
