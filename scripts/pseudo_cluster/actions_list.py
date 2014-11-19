@@ -21,7 +21,7 @@ class Scheduled_action(object):
             if time_limit == 0:
                 time_limit=1
         
-        duration=extended_task_record.time_end-extended_task_record.time_start
+        duration=self.extended_task_record.time_end-self.extended_task_record.time_start
         
         s=self.extended_task_record.get_submit_string(time_limit,duration.total_seconds())
         #TODO
@@ -54,14 +54,15 @@ class Action_list(object):
          Регистрирует новое действие
         """ 
         action=Scheduled_action(extended_task_record,action)
-        actions_list.append(action)
+        self.actions_list.append(action)
 
     def do_actions(self,time_compression):
         """
             Производит все действия, которые есть в списке
         """
-        for action in actions_list:
+        for action in self.actions_list:
             if   action.action == "submit":
                     action.submit_task(time_compression)
             elif action.action == "cancel":
                     action.cancel_task()
+

@@ -175,5 +175,8 @@ class Tasks_list(object):
     
     def __getitem__(self, item):
         return self.tasks_list[item]
+
+    def __len__(self):
+        return len(self.tasks_list)
         
 

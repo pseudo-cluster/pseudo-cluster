@@ -5,12 +5,14 @@ import os
 import sys
 import argparse
 import datetime
+import time
 import pwd
 import grp
 
 from pseudo_cluster.task import  Task_record
 from pseudo_cluster.tasks_list import  Tasks_list
 from pseudo_cluster.extended_task import Extended_task_record
+from pseudo_cluster.actions_list import Action_list
 
 def get_submit_string(self,time_limit,duration):
     """
@@ -66,12 +68,14 @@ def main(argv=None):
     parser.add_argument(
             '--time-compress',
             dest='compress_times',
+            type=int,
             required=True,
             help="Во сколько раз сжимать время. Напиример: 10"
     )
     parser.add_argument(
             '--time-interval',
             dest='interval',
+            type=int,
             required=False,
             default=2,
             help="Раз во сколько минут обращаться к системе ведения очередей"            
@@ -97,27 +101,42 @@ def main(argv=None):
     tasks_list=Tasks_list()
     tasks_list.read_statistics_from_file(args.prefix)
 
-    extended_tasks={}
+    extended_tasks=dict()
 
     begin_time=tasks_list[0].time_submit
-    end_time=begin_time+datatime.timedelta(minutes=args.interval*args.compress_times)
+    end_time=begin_time+datetime.timedelta(minutes=args.interval*args.compress_times)
     num_tasks=len(tasks_list)
     last_task=0;
     
     actions_list=Action_list()
 
     while last_task < num_tasks:
+        end_time=begin_time+datetime.timedelta(minutes=args.interval*args.compress_times)
+        begin_actions_time=datetime.datetime.utcnow()
         for i in xrange(last_task,num_tasks):
             task=tasks_list[i]
-            if task.time_submit > end_time:
-                last_task=i
-                break
-            else:
-                actions_list.register_action(Extended_task_record(task,"submit"))
+            if task.time_submit < begin_time:
+                last_task=i               
+            if task.time_submit < end_time:
+                if task.job_id not in extended_tasks:
+                    extended_task=Extended_task_record()
+                    extended_task.fill_by_task(task)
+                    actions_list.register_action(extended_task,"submit")
+                    extended_tasks[task.job_id]=extended_task
+            
             #TODO
             # добавить действие по остановке задачи
             #
-           
+            if (task.time_end < end_time) and (task.status == "canceled"):
+                actions_list.register_action(extended_tasks[task.task_id],"cancel")
+
+        actions_list.do_actions(args.compress_times)
+        delay_value= (datetime.datetime.utcnow()- begin_actions_time) 
+        if delay_value < datetime.timedelta(minutes=args.interval):
+            how_much_sleep=args.interval*60-delay_value.total_seconds()
+            time.sleep(how_much_sleep)
+        begin_time=end_time
+
 
 
 
