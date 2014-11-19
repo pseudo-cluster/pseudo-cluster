@@ -172,5 +172,8 @@ class Tasks_list(object):
             self.tasks_list.append(tsk)
             print tsk
         f.close()
+    
+    def __getitem__(self, item):
+        return self.tasks_list[item]
         
 
