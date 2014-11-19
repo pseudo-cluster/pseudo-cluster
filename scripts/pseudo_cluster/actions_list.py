@@ -45,9 +45,7 @@ class Action_list(object):
     на один сеанс взаимодействия с системой ведения очередей.
     """
     def __init__(self):
-        self.submit_string=None
-        self.cancel_string=None
-        self.actions_list=[]
+        self.actions_list=list()
 
     def register_action(self,extended_task_record,action):
         """
@@ -65,4 +63,5 @@ class Action_list(object):
                     action.submit_task(time_compression)
             elif action.action == "cancel":
                     action.cancel_task()
+        self.actions_list=list()
 

@@ -37,7 +37,7 @@ def get_submit_string(self,time_limit,duration):
     if time_limit > 0:
         s+="--time=\"%d\" " % time_limit
 
-    s+="./pseudo_cluster_task.sh -t %d -s \"%s\""
+    s+="./pseudo_cluster_task.sh -t %d -s \"%s\"" % (duration, self.task_state)
 
     return s
 
@@ -127,15 +127,17 @@ def main(argv=None):
             #TODO
             # добавить действие по остановке задачи
             #
-            if (task.time_end < end_time) and (task.status == "canceled"):
+            if (task.time_end < end_time) and (task.task_state == "canceled"):
                 actions_list.register_action(extended_tasks[task.task_id],"cancel")
 
         actions_list.do_actions(args.compress_times)
         delay_value= (datetime.datetime.utcnow()- begin_actions_time) 
         if delay_value < datetime.timedelta(minutes=args.interval):
             how_much_sleep=args.interval*60-delay_value.total_seconds()
-            time.sleep(how_much_sleep)
+            #time.sleep(how_much_sleep)
+            print ("will sleep %d" % how_much_sleep)
         begin_time=end_time
+
 
 
 
