@@ -157,9 +157,10 @@ class Task_record(object):
         self.priority      = int (tupl[10])
         self.task_class    = tupl[11].strip('"')
         self.task_state    = tupl[12].strip('"')
-        other_string=tupl[13].strip('"')
-        if other_string !="":
-           for item in other_string.split(','):
+        other_string       = tupl[13].strip('"\n')
+        if other_string != "":
+            #print "string='%s'" % other_string
+            for item in other_string.split(','):
                pair=item.strip().split('=')
                self.other[pair[0]]=pair[1].strip("'\"")
             
