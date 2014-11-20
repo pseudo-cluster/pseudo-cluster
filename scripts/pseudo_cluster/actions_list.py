@@ -30,15 +30,15 @@ class Scheduled_action(object):
         duration=self.extended_task_record.time_end-self.extended_task_record.time_start
         
         s=self.extended_task_record.get_submit_string(time_limit,duration.total_seconds())
-        #TODO
         #
-        # Здесь должен быть fork(), setuid(), setgit()
-        # exec()
+        # Порождение процесса. 
         #
         pipe=os.pipe()
         pid=os.fork()
         if pid == 0:
             os.close(pipe[0])
+            os.dup2(pipe[1],1)
+            os.close(pipe[1])
             user_touple=pwd.getpwnam(self.extended_task_record.user_name)
             uid=user_touple[2]
             os.setuid(uid)
@@ -52,10 +52,30 @@ class Scheduled_action(object):
         # father
         #
         os.close(pipe[1])
+        f=os.fdopen(pipe[0],"r")
+        line=f.readline()
+        if not self.extended_task_record.parse_task_id(f,line):
+            while True:
+                print "\t\tTASK '%s': %s" % ( self.extended_task_record.job_name, line )
+                try:
+                    line=f.readline()
+                except:
+                    break
+        f.close()
 
-        os.wait(pid)
+        status=os.wait(pid)
+        if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
+            pass
+        else:
+            print "Submitting for task ID '%s' failed"\
+                    % self.extended_task_record.job_name
+        
+        #print s
 
-        print s
+        #TODO
+        #
+        # Возможно оно должно возвращать True или False
+        #
 
     def cancel_task(self):
         """

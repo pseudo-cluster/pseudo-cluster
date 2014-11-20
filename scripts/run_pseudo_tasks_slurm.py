@@ -19,30 +19,50 @@ def get_submit_string(self,time_limit,duration):
     Функция генерирует строку, для submit
     задачи в очередь slurm
     """
-    s="sbatch "
-    s+="--account=\"%s\" " % self.task_class
-    s+="--comment=\"Pseudo cluster emulating task\" "
-    s+="--job-name=\"pseudo_cluster|%s|%s\" " % (self.job_id, self.job_name)
+    s=list()
+    s.append("sbatch")
+    s.append("--account=\"%s\"" % self.task_class)
+    s.append("--comment=\"Pseudo cluster emulating task\"")
+    s.append("--job-name=\"pseudo_cluster|%s|%s\"" % (self.job_id, self.job_name))
     try:
         limit=self.other["memory_limit"]
     except KeyError:
         limit="0"
     if int(limit) > 0:
-        s+="--mem=\"%s\" "   % limit
-    s+="--ntasks=\"%d\" "    % self.required_cpus
-    s+="--partition=\"%s\" " % self.partition
+        s.append("--mem=\"%s\"" % limit)
+    s.append("--ntasks=\"%d\"" % self.required_cpus)
+    s.append("--partition=\"%s\"" % self.partition)
     if self.priority !=0:
-        s+="--priority=\"\" " % self.priority
+        s.append("--priority=\"%d\"" % self.priority)
     
     if time_limit > 0:
-        s+="--time=\"%d\" " % time_limit
+        s.append("--time=\"%d\"" % time_limit)
 
-    s+="./pseudo_cluster_task.sh -t %d -s \"%s\"" % (duration, self.task_state)
+    s.append("./pseudo_cluster_task.sh")
+    s.append("-t")
+    s.append(str(duration))
+    s.append("-s")
+    s.append(self.task_state)
 
     return s
 
 def get_cancel_string(self):
-    return "scancel %s" % self.actual_task_id
+    return [ "scancel" ,"%d" % self.actual_task_id ]
+
+def parse_task_id(self,f,first_line):
+    """
+    Выковыривает ID задачи из файла, и превой строчки к файлу.
+    """
+    try:
+        tup=first_line.split(' ')
+    except:
+        return False
+
+    if (tup[0] == "Submitted") and (tup[1] == "batch"):
+        self.actual_task_id=int(tup[3])
+        return True
+    return False
+    
 
 def main(argv=None):
     """
@@ -97,6 +117,7 @@ def main(argv=None):
     #
     Extended_task_record.get_submit_string=get_submit_string
     Extended_task_record.get_cancel_string=get_cancel_string
+    Extended_task_record.parse_task_id=parse_task_id
 
     tasks_list=Tasks_list()
     tasks_list.read_statistics_from_file(args.prefix)
