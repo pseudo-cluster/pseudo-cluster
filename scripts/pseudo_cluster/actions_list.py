@@ -35,6 +35,26 @@ class Scheduled_action(object):
         # Здесь должен быть fork(), setuid(), setgit()
         # exec()
         #
+        pipe=os.pipe()
+        pid=os.fork()
+        if pid == 0:
+            os.close(pipe[0])
+            user_touple=pwd.getpwnam(self.extended_task_record.user_name)
+            uid=user_touple[2]
+            os.setuid(uid)
+            os.seteuid(uid)
+            group_touple=grp.getgrnam(self.extended_task_record.group_name)
+            gid=group_touple[2]
+            os.setgid(gid)
+            os.setegid(gid)
+            os.execve(s[0],s)
+        #
+        # father
+        #
+        os.close(pipe[1])
+
+        os.wait(pid)
+
         print s
 
     def cancel_task(self):
@@ -69,6 +89,6 @@ class Action_list(object):
                     action.submit_task(time_compression)
             elif action.action == "cancel":
                     action.cancel_task()
-            print action
+            #print action
         self.actions_list=list()
 

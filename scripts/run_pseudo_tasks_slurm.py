@@ -126,21 +126,21 @@ def main(argv=None):
                     actions_list.register_action(extended_task,"submit")
                     extended_tasks[task.job_id]=extended_task
             
-            #TODO
-            # добавить действие по остановке задачи
-            #
             if (task.time_end < end_time) and (task.task_state == "canceled"):
                 actions_list.register_action(extended_tasks[task.job_id],"cancel")
 
         actions_list.do_actions(args.compress_times)
-        delay_value = datetime.datetime.utcnow()- begin_actions_time
-        if delay_value < datetime.timedelta(minutes=args.interval):
-            how_much_sleep=args.interval*60-delay_value.total_seconds()
-            #time.sleep(how_much_sleep)
-            print ("will sleep %d" % how_much_sleep)
+               
         print begin_time
         print end_time
         print "last_task=%d, num_tasks=%d" % (last_task,num_tasks)
+        
+        delay_value = datetime.datetime.utcnow()- begin_actions_time
+        if delay_value < datetime.timedelta(minutes=args.interval):
+            how_much_sleep=args.interval*60-delay_value.total_seconds()
+            print ("will sleep %d" % how_much_sleep)
+            time.sleep(how_much_sleep)
+            
         begin_time=end_time
        
 

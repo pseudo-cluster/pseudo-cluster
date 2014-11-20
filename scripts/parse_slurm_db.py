@@ -30,7 +30,7 @@ def main(argv=None):
             Результат помещается в несколько текстовых файлов.
             """,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog="Например можно запустить так:\n \""+sys.argv[0]
+            epilog="Например можно запустить так:\n  "+argv[0]
     )
     
     parser.add_argument(
