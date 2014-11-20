@@ -7,12 +7,13 @@ class Extended_task_record(task.Task_record):
     Класс для хранения связи между задачей в статистике и 
     задачей, которая ставится в псевдокластер.
     """
-    def init(self):
+
+    def __init__(self):
         """
         Делает новый объект по существующей задаче
         """
-        self.actual_task_id= None
-        super.init(self)
+        self.actual_task_id = None
+        super(Extended_task_record,self).__init__()
 
     def fill_by_task(self,task_record):
         """
@@ -36,4 +37,10 @@ class Extended_task_record(task.Task_record):
         self.task_class=task_record.task_class
         self.task_state=task_record.task_state
         self.other=task_record.other.copy()
+    
+    def __str__(self):
+        s="class Extended_task_record(object)"
+        s+="actual_task_id='%s'" % self.actual_task_id
+        s+=super(Extended_task_record,self).__str__()
+        return s
     

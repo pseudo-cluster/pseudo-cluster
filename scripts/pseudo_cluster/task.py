@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import copy
 
 def get_header_string():
       """
@@ -96,7 +97,25 @@ class Task_record(object):
         s+="other= "+str(self.other)
         return s
 
+    def __copy__(self):
+        r=Task_record()
+        r.job_id=self.job_id
+        r.job_name=self.job_name
+        r.time_submit=self.time_submit
+        r.time_start=self.time_start
+        r.time_end=self.time_end
+        r.user_name=self.user_name
+        r.group_name=self.group_name
+        r.time_limit=self.time_limit
+        r.required_cpus=self.required_cpus
+        r.partition=self.partition
+        r.priority=self.priority
+        r.task_class=self.task_class
+        r.task_state=self.task_state
+        r.other=copy.copy(self.other)
+        return r
 
+    
     def print_record_to_file(self,file_pointer):
         """
         Печать информации о задаче в файл

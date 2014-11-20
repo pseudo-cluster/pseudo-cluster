@@ -11,6 +11,12 @@ class Scheduled_action(object):
         self.extended_task_record = extended_task_record
         self.action               = action
 
+    def __str__(self):
+        s="class Scheduled_action(object):"
+        s+="action='%s', " % self.action
+        s+="extended_task_record='%s'" % str(self.extended_task_record)
+        return s
+
     def submit_task(self,time_compression):
         """
         Ставит задачу в очередь c учётом коэффициента компрессии времени
@@ -63,5 +69,6 @@ class Action_list(object):
                     action.submit_task(time_compression)
             elif action.action == "cancel":
                     action.cancel_task()
+            print action
         self.actions_list=list()
 

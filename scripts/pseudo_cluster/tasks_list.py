@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import copy
+
 import task
 
 class Tasks_list(object):
@@ -169,8 +171,8 @@ class Tasks_list(object):
         f.readline()
         tsk=task.Task_record()
         while tsk.read_record_from_file(f):
-            self.tasks_list.append(tsk)
-            print tsk
+            self.tasks_list.append(copy.copy(tsk))
+            #print tsk
         f.close()
     
     def __getitem__(self, item):

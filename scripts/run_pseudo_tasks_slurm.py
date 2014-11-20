@@ -42,7 +42,7 @@ def get_submit_string(self,time_limit,duration):
     return s
 
 def get_cancel_string(self):
-    return "scancel %s" % actual_task_id
+    return "scancel %s" % self.actual_task_id
 
 def main(argv=None):
     """
@@ -103,20 +103,22 @@ def main(argv=None):
 
     extended_tasks=dict()
 
-    begin_time=tasks_list[0].time_submit
-    end_time=begin_time+datetime.timedelta(minutes=args.interval*args.compress_times)
     num_tasks=len(tasks_list)
+    begin_time=tasks_list[0].time_submit
+    tasks_list.print_to_files("/tmp/")
     last_task=0;
     
     actions_list=Action_list()
 
-    while last_task < num_tasks:
+    while last_task != num_tasks-1:
         end_time=begin_time+datetime.timedelta(minutes=args.interval*args.compress_times)
         begin_actions_time=datetime.datetime.utcnow()
-        for i in xrange(last_task,num_tasks):
+        for i in xrange(0,num_tasks):
+            if i < last_task:
+                continue
             task=tasks_list[i]
             if task.time_submit < begin_time:
-                last_task=i               
+               last_task=i
             if task.time_submit < end_time:
                 if task.job_id not in extended_tasks:
                     extended_task=Extended_task_record()
@@ -128,18 +130,19 @@ def main(argv=None):
             # добавить действие по остановке задачи
             #
             if (task.time_end < end_time) and (task.task_state == "canceled"):
-                actions_list.register_action(extended_tasks[task.task_id],"cancel")
+                actions_list.register_action(extended_tasks[task.job_id],"cancel")
 
         actions_list.do_actions(args.compress_times)
-        delay_value= (datetime.datetime.utcnow()- begin_actions_time) 
+        delay_value = datetime.datetime.utcnow()- begin_actions_time
         if delay_value < datetime.timedelta(minutes=args.interval):
             how_much_sleep=args.interval*60-delay_value.total_seconds()
             #time.sleep(how_much_sleep)
             print ("will sleep %d" % how_much_sleep)
+        print begin_time
+        print end_time
+        print "last_task=%d, num_tasks=%d" % (last_task,num_tasks)
         begin_time=end_time
-
-
-
+       
 
 
 
