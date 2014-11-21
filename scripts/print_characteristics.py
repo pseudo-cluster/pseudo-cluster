@@ -163,37 +163,42 @@ def main(argv=None):
     if argv == None:
         argv=sys.argv
     
-    parser = argparse.ArgumentParser(\
-            description="""
+    parser = argparse.ArgumentParser(
+            description=\
+            """
             Данная программа вычисляет метрики по файлу статистики с задачами.
-            """,\
+            """,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    
-    parser.add_argument(\
-            '--prefix',\
-            dest='prefix',\
-            required=False,\
-            default='./',\
-            help='префикс, по которому находится файл со статистикой'\
+ 
+    parser.add_argument(
+            '--metric',
+            dest='metric',
+            required=True,
+            choices=StatisticsCounter.AVAILABLE_METRICS,
+            help='Какую метрику следует вычислять'
+    )
+   
+    parser.add_argument(
+            '--prefix',
+            dest='prefix',
+            required=False,
+            default='./',
+            help='префикс, по которому находится файл со статистикой'
     )
 
-    parser.add_argument(\
-            '--unit-time',\
-            dest='unit_time',\
-            required=False,\
-            default=3600.0,\
-            help='Сколько минут считать за единицу времени'+\
-            'при подсчёте средней загруженности. Например: 3600.0'\
+    parser.add_argument(
+            '--unit-time',
+            dest='unit_time',
+            required=False,
+            default=3600.0,
+            help=\
+            '''
+             Сколько минут считать за единицу времени при подсчёте средней загруженности.
+             Например: 3600.0
+            '''
     )
 
-    parser.add_argument(\
-            '--metric',\
-            dest='metric',\
-            required=True,\
-            choices=StatisticsCounter.AVAILABLE_METRICS,\
-            help='Какую метрику следует вычислять'\
-    )
 
     args=parser.parse_args()
 
