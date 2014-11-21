@@ -47,7 +47,7 @@ def get_submit_string(self,time_limit,duration):
     return s
 
 def get_cancel_string(self):
-    return [ "scancel" ,"%d" % self.actual_task_id ]
+    return [ "scancel" , str(self.actual_task_id) ]
 
 def parse_task_id(self,f,first_line):
     """
@@ -82,7 +82,7 @@ def main(argv=None):
             не делает определённое количество секунд.
             """,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog="Например можно запустить так:\n \""+sys.argv[0]
+            epilog="Например можно запустить так:\n "+argv[0]+" --time-compress 30"
     )
     
     parser.add_argument(
