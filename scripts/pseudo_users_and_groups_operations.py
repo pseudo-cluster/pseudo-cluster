@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import sys
 
 def main(argv=None):
     """
@@ -36,7 +37,7 @@ def main(argv=None):
             '--homes-prefix',
             dest='homes_prefix',
             required=False,
-            default="/home/pseudo_cluster_users/",
+            default="/home/pseudo_cluster_users",
             help="префикс, по которому находятся каталоги пользователей псевдокластера"
     )
 
@@ -46,7 +47,7 @@ def main(argv=None):
     
     user_group_map=dict()
 
-    file_descr=open(file_system_prefix+"user_in_groups_map","r")
+    file_descr=open(args.prefix+"user_in_groups_map","r")
     for  line in file_descr:
         tupl=line.split(':')
         user=tupl[0].strip()
@@ -58,7 +59,7 @@ def main(argv=None):
         user_group_map[user]=groups
     file_descr.close()
 
-    file_descr=open(file_system_prefix+"users_map","r")
+    file_descr=open(args.prefix+"users_map","r")
     for line in file_descr:
         tupl=line.split(':')
         user=tupl[0].strip()
@@ -68,5 +69,9 @@ def main(argv=None):
         #os.system()
         print command_line
 
-                  
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
 
