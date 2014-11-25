@@ -13,6 +13,8 @@ class Tasks_list(object):
     def __init__(self):
          self.user_name_pattern="pseudo_cluster_user_"
          self.group_name_pattern="pseudo_cluster_group_"
+         self.last_user_id=1
+         self.last_group_id=1
          #
          #   Множество отображений: 
          #   пользователь на кластере --> порядковый номер, 
@@ -43,9 +45,12 @@ class Tasks_list(object):
           или если его ещё нет в словаре пользователей
           добавить его туда.
         """
-        internal_id=self.users_map.get(user)
-        if internal_id == None:
-            internal_id=len(self.users_map)+1
+        internal_id=None
+        if user in self.users_map.keys():
+            internal_id=self.users_map[user]
+        else:
+            internal_id=self.last_user_id
+            self.last_user_id+=100
             self.users_map[user]=internal_id
         
         return internal_id
@@ -56,9 +61,12 @@ class Tasks_list(object):
           или если его ещё нет в словаре групп
           добавить его туда.
         """
-        internal_id=self.groups_map.get(group)
-        if internal_id == None:
-            internal_id=len(self.groups_map)+1
+        internal_id=None
+        try:
+            internal_id=self.groups_map[group]
+        except KeyError:
+            internal_id=self.last_group_id
+            self.last_group_id+=1
             self.groups_map[group]=internal_id
         
         return internal_id

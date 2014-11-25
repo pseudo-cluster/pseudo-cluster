@@ -202,19 +202,19 @@ def main(argv=None):
                 user_name=user_touple[0]
                 #print (user_name)
             except KeyError, e:
-                internal_user_id=tasks_list.get_internal_user_id(user_id)
-                user_name=str(user_id)
+                user_name= "real-user-uid-%d" % user_id
+                internal_user_id=tasks_list.get_internal_user_id(user_name)
 
             try:
                 group_touple=grp.getgrgid(group_id)
                 group_name=group_touple[0]
                 #print (group_name)
             except KeyError, e:
-                internal_group_id=tasks_list.get_internal_group_id(group_id)
-                group_name=str(group_id)
+                group_name= "real-user-gid-%d" % group_id
+                internal_group_id=tasks_list.get_internal_group_id(group_name)
         else:
-            user_name=row[5]
-            group_name=row[6]
+            user_name  =  "real-user-uid-%d" % user_id
+            group_name =  "real-user-gid-%d" % group_id
                 
 
         if args.masquerade_users == "Yes":
