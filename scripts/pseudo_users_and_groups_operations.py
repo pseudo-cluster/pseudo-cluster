@@ -59,15 +59,35 @@ def main(argv=None):
         user_group_map[user]=groups
     file_descr.close()
 
+    file_descr=open(args.prefix+"groups_map","r")
+    for line in file_descr:
+        tupl=line.split(':')
+        group=tupl[0].strip()
+
+        command_line  = "groupadd --force  '%s'" % group
+        #os.system()
+        print command_line
+    file_descr.close()
+        
+
     file_descr=open(args.prefix+"users_map","r")
     for line in file_descr:
         tupl=line.split(':')
         user=tupl[0].strip()
+
         command_line="useradd "
         command_line+="--create-home --home \'%s/%s\' " % (args.homes_prefix, user)
         command_line+="--gid '%s' " % user_group_map[user][0]
+        groups_line=""
+        for i in xrange (1, len(user_group_map[user])):
+            groups_line+="%s," % user_group_map[user][i]
+        groups_line=groups_line.strip("\t\r '")
+        if groups_line != "":
+            command_line+="--groups '%s'"
+        command_line+=" %s" % user
         #os.system()
         print command_line
+    file_descr.close()
 
     return 0
 
