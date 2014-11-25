@@ -222,7 +222,7 @@ def main(argv=None):
             internal_group_id = tasks_list.get_internal_group_id(group_name)
             task_record.user_name  = tasks_list.get_user_name_by_id(internal_user_id)
             task_record.group_name = tasks_list.get_group_name_by_id(internal_group_id)
-            tasks_list.register_user_in_group(internal_user_id, internal_group_id )           
+            tasks_list.register_user_in_group(internal_user_id, internal_group_id )
         else:
             if internal_user_id:
                 task_record.user_name  = tasks_list.get_user_name_by_id(internal_user_id)
