@@ -82,7 +82,40 @@ class Scheduled_action(object):
          Принудительно завершает задачу
         """
         s=self.extended_task_record.get_cancel_string()
-        print s
+        pipe=os.pipe()
+        pid=os.fork()
+        if pid == 0:
+            os.close(pipe[0])
+            os.dup2(pipe[1],1)
+            os.close(pipe[1])
+            user_touple=pwd.getpwnam(self.extended_task_record.user_name)
+            uid=user_touple[2]
+            os.setuid(uid)
+            os.seteuid(uid)
+            group_touple=grp.getgrnam(self.extended_task_record.group_name)
+            gid=group_touple[2]
+            os.setgid(gid)
+            os.setegid(gid)
+            os.execve(s[0],s)
+        #
+        # father
+        #
+        os.close(pipe[1])
+        f=os.fdopen(pipe[0],"r")
+        for line in f:
+            print "\t\tTASK '%s': %s" % ( self.extended_task_record.job_name, line )
+        f.close()
+
+        status=os.wait(pid)
+        if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
+            pass
+        else:
+            print "Canceling task with ID '%s'  and actual id '%s' failed"\
+                    % ( self.extended_task_record.job_name,
+                        self.extended_task_record.actual_task_id
+                      )
+
+        #print s
     
 
 class Action_list(object):
