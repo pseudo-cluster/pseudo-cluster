@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pwd
+import grp
 
 import extended_task
 
