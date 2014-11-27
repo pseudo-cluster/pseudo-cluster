@@ -12,36 +12,94 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     Подготавливает сыновий процесс к запуску в нём 
     команды
     """
+    #print "uid=%d, euid=%d, gid=%d, egid=%d, " % (
+    #        os.getuid(),
+    #        os.geteuid(),
+    #        os.getgid(),
+    #        os.getegid()
+    #        )
+
     os.close(pipe[0])
     os.dup2(pipe[1],1)
     os.close(pipe[1])
+
+    os.setpgrp()
+
     try:
         user_touple=pwd.getpwnam(extended_task_record.user_name)
     except KeyError, e:
         print "User '%s' is not found in operating system"\
                 % extended_task_record.user_name
         sys.exit(2)
-    uid=user_touple[2]
-    
-    os.setuid(uid)
-    os.seteuid(uid)
-    
+    uid=int(user_touple[2])
+  
+        
+    #
+    # Commented because may be it enough 
+    # only change effective ID
+    #
     try:
-        group_touple=grp.getgrnam(extended_task_record.group_name)
-    except KeyError, e:
-        print "Group '%s' is not found in operating system"\
-                            % extended_task_record.group_name
-        sys.exit(2)
-    gid=group_touple[2]
-
-    os.setgid(gid)
-    os.setegid(gid)
-
-    try:
-        os.execve(command_line[0],command_line)
+       os.setuid(uid)
     except OSError, e:
+        print "Can't change uid from %d to %d:"\
+                % (os.getuid(), uid)
         print e
         sys.exit(3)
+
+    try:
+        os.seteuid(uid)
+    except OSError, e:
+        print "Can't change effective uid from %d to %d:"\
+                % (os.geteuid(), uid)
+        print e
+        sys.exit(3)
+
+    #XXX
+    # Идентификатор группы менять не хочет
+    # зараза ни в какую!!!
+    # Надо ботать матчасть почему так.
+    #
+    #try:
+    #    group_touple=grp.getgrnam(extended_task_record.group_name)
+    #except KeyError, e:
+    #    print "Group '%s' is not found in operating system"\
+    #                        % extended_task_record.group_name
+    #    sys.exit(2)
+    #gid=int(group_touple[2])    
+    #
+    #groups=os.getgroups()
+    #print "UID=%d Groups: %s" % (os.getuid(), str(groups))
+    #group_list=[]
+    #group_list.append(gid)
+    #os.setgroups(group_list)
+
+   
+    ##
+    ## Commented because may be it enough 
+    ## only change effective ID
+    ##
+    #try:
+    #    os.setgid(gid)
+    #except OSError, e:
+    #    print "Can't change gid from %d to %d:"\
+    #            % (os.getgid(), gid)
+    #    print e
+    #    sys.exit(3)
+ 
+    #try:
+    #    os.setegid(gid)
+    #except OSError, e:
+    #    print "Can't change effective gid from %d to %d:"\
+    #            % (os.getegid(), gid)
+    #    print e
+ 
+    #    sys.exit(3)
+ 
+    try:
+        os.execvp(command_line[0],command_line)
+    except OSError, e:
+        print e
+        sys.exit(4)
 
     return True
 
@@ -116,6 +174,7 @@ class Scheduled_action(object):
                             self.extended_task_record.job_id,
                             self.extended_task_record.job_name
                       )
+            print "-- %s --" % str(s)
             return False
         return True
        
@@ -143,6 +202,7 @@ class Scheduled_action(object):
                         self.extended_task_record.job_name,
                         self.extended_task_record.actual_task_id
                       )
+            print "-- %s --" % str(s)
             return False
         return True            
 
