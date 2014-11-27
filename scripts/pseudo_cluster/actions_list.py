@@ -3,8 +3,63 @@
 import os
 import pwd
 import grp
+import sys
 
 import extended_task
+
+def prepare_child_to_run(extended_task_record, pipe, command_line):
+    """
+    Подготавливает сыновий процесс к запуску в нём 
+    команды
+    """
+    os.close(pipe[0])
+    os.dup2(pipe[1],1)
+    os.close(pipe[1])
+    try:
+        user_touple=pwd.getpwnam(extended_task_record.user_name)
+    except KeyError, e:
+        print "User '%s' is not found in operating system"\
+                % extended_task_record.user_name
+        sys.exit(2)
+    uid=user_touple[2]
+    
+    os.setuid(uid)
+    os.seteuid(uid)
+    
+    try:
+        group_touple=grp.getgrnam(extended_task_record.group_name)
+    except KeyError, e:
+        print "Group '%s' is not found in operating system"\
+                            % extended_task_record.group_name
+        sys.exit(2)
+    gid=group_touple[2]
+
+    os.setgid(gid)
+    os.setegid(gid)
+
+    try:
+        os.execve(command_line[0],command_line)
+    except OSError, e:
+        print e
+        sys.exit(3)
+
+    return True
+
+def print_output(file_pointer,extended_task_record,line):
+    """
+    Печать вывода от процесса ставящего/убирающего 
+    задачу в очередь/из очереди
+    """
+    while line !="":
+        print "\t\tTASK '%s'|'%s': %s"\
+                        % ( 
+                             extended_task_record.job_id,
+                             extended_task_record.job_name, 
+                             line
+                          )
+        line=file_pointer.readline()
+    file_pointer.close()
+
 
 class Scheduled_action(object):
     """
@@ -40,18 +95,7 @@ class Scheduled_action(object):
         pipe=os.pipe()
         pid=os.fork()
         if pid == 0:
-            os.close(pipe[0])
-            os.dup2(pipe[1],1)
-            os.close(pipe[1])
-            user_touple=pwd.getpwnam(self.extended_task_record.user_name)
-            uid=user_touple[2]
-            os.setuid(uid)
-            os.seteuid(uid)
-            group_touple=grp.getgrnam(self.extended_task_record.group_name)
-            gid=group_touple[2]
-            os.setgid(gid)
-            os.setegid(gid)
-            os.execve(s[0],s)
+            prepare_child_to_run(self.extended_task_record,pipe,s)
         #
         # father
         #
@@ -59,28 +103,22 @@ class Scheduled_action(object):
         f=os.fdopen(pipe[0],"r")
         line=f.readline()
         if not self.extended_task_record.parse_task_id(f,line):
-            while True:
-                print "\t\tTASK '%s': %s" % ( self.extended_task_record.job_name, line )
-                try:
-                    line=f.readline()
-                except:
-                    break
-        f.close()
+            print_output(f,self.extended_task_record,line)
+        else:
+            f.close()
 
-        status=os.wait(pid)
+        pid,status = os.wait()
         if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
             pass
         else:
-            print "Submitting for task ID '%s' failed"\
-                    % self.extended_task_record.job_name
-        
-        #print s
-
-        #TODO
-        #
-        # Возможно оно должно возвращать True или False
-        #
-
+            print "-- Submitting for task ID '%s'|'%s' failed --"\
+                    % ( 
+                            self.extended_task_record.job_id,
+                            self.extended_task_record.job_name
+                      )
+            return False
+        return True
+       
     def cancel_task(self):
         """
          Принудительно завершает задачу
@@ -89,38 +127,24 @@ class Scheduled_action(object):
         pipe=os.pipe()
         pid=os.fork()
         if pid == 0:
-            os.close(pipe[0])
-            os.dup2(pipe[1],1)
-            os.close(pipe[1])
-            user_touple=pwd.getpwnam(self.extended_task_record.user_name)
-            uid=user_touple[2]
-            os.setuid(uid)
-            os.seteuid(uid)
-            group_touple=grp.getgrnam(self.extended_task_record.group_name)
-            gid=group_touple[2]
-            os.setgid(gid)
-            os.setegid(gid)
-            os.execve(s[0],s)
+            prepare_child_to_run(self.extended_task_record,pipe,s)
         #
         # father
         #
         os.close(pipe[1])
         f=os.fdopen(pipe[0],"r")
-        for line in f:
-            print "\t\tTASK '%s': %s" % ( self.extended_task_record.job_name, line )
-        f.close()
-
-        status=os.wait(pid)
+        print_output(f,self.extended_task_record,"-- Cancel bellow --")
+        pid, status =os.wait()
         if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
             pass
         else:
-            print "Canceling task with ID '%s'  and actual id '%s' failed"\
-                    % ( self.extended_task_record.job_name,
+            print "-- Canceling task '%s'|'%s' with actual ID '%s' failed --"\
+                    % ( self.extended_task_record.job_id,
+                        self.extended_task_record.job_name,
                         self.extended_task_record.actual_task_id
                       )
-
-        #print s
-    
+            return False
+        return True            
 
 class Action_list(object):
     """
