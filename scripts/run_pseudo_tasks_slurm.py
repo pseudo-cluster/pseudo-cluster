@@ -16,12 +16,12 @@ from pseudo_cluster.actions_list import Action_list
 
 def get_submit_string(self,time_limit,duration):
     """
-    Функция генерирует строку, для submit
+    Функция генерирует строку для submit
     задачи в очередь slurm
     """
     s=list()
     s.append("sbatch")
-    s.append("--account=\"%s\"" % self.task_class)
+    s.append("--account=%s" % self.task_class)
     s.append("--comment=\"Pseudo cluster emulating task\"")
     s.append("--job-name=\"pseudo_cluster|%s|%s\"" % (self.job_id, self.job_name))
     try:
@@ -29,16 +29,19 @@ def get_submit_string(self,time_limit,duration):
     except KeyError:
         limit="0"
     if int(limit) > 0:
-        s.append("--mem=\"%s\"" % limit)
-    s.append("--ntasks=\"%d\"" % self.required_cpus)
-    s.append("--partition=\"%s\"" % self.partition)
+        s.append("--mem=%d" % int(limit))
+    s.append("--ntasks=%d" % self.required_cpus)
+    s.append("--partition=%s" % self.partition)
     if self.priority !=0:
-        s.append("--priority=\"%d\"" % self.priority)
+        s.append("--priority=%d" % self.priority)
     
     if time_limit > 0:
-        s.append("--time=\"%d\"" % time_limit)
-
-    s.append("./pseudo_cluster_task.sh")
+        s.append("--time=%d" % time_limit)
+    #
+    # Path to this script must be available 
+    # from environment variable PATH  
+    #
+    s.append("pseudo_cluster_task.sh")
     s.append("-t")
     s.append(str(duration))
     s.append("-s")
@@ -128,7 +131,6 @@ def main(argv=None):
 
     num_tasks=len(tasks_list)
     begin_time=tasks_list[0].time_submit
-    tasks_list.print_to_files("/tmp/")
     last_task=0;
     
     actions_list=Action_list()
