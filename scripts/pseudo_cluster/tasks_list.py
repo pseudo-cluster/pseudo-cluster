@@ -50,7 +50,7 @@ class Tasks_list(object):
             internal_id=self.users_map[user]
         else:
             internal_id=self.last_user_id
-            self.last_user_id+=100
+            self.last_user_id+=1
             self.users_map[user]=internal_id
         
         return internal_id
