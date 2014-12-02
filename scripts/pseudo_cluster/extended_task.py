@@ -13,9 +13,10 @@ class Extended_task_record(task.Task_record):
         Делает новый объект по существующей задаче
         """
         self.actual_task_id = None
+        self.path_to_task = None
         super(Extended_task_record,self).__init__()
 
-    def fill_by_task(self,task_record):
+    def fill_by_task(self,task_record,path_to_task):
         """
          Заполяет объект по задаче
         """
@@ -23,6 +24,7 @@ class Extended_task_record(task.Task_record):
         #
         # дописать копирование задачи
         #
+        self.path_to_task=path_to_task
         self.job_id=task_record.job_id
         self.job_name=task_record.job_name
         self.time_submit=task_record.time_submit

@@ -26,6 +26,36 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     os.setpgrp()
 
     try:
+        group_touple=grp.getgrnam(extended_task_record.group_name)
+    except KeyError, e:
+        print "Group '%s' is not found in operating system"\
+                            % extended_task_record.group_name
+        sys.exit(2)
+    gid=int(group_touple[2])    
+    
+    group_list=[]
+    group_list.append(gid)
+    os.setgroups(group_list)
+
+   
+    try:
+        os.setgid(gid)
+    except OSError, e:
+        print "Can't change gid from %d to %d:"\
+                % (os.getgid(), gid)
+        print e
+        sys.exit(3)
+ 
+    try:
+        os.setegid(gid)
+    except OSError, e:
+        print "Can't change effective gid from %d to %d:"\
+                % (os.getegid(), gid)
+        print e
+ 
+        sys.exit(3)
+
+    try:
         user_touple=pwd.getpwnam(extended_task_record.user_name)
     except KeyError, e:
         print "User '%s' is not found in operating system"\
@@ -34,10 +64,6 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     uid=int(user_touple[2])
   
         
-    #
-    # Commented because may be it enough 
-    # only change effective ID
-    #
     try:
        os.setuid(uid)
     except OSError, e:
@@ -54,46 +80,6 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
         print e
         sys.exit(3)
 
-    #XXX
-    # Идентификатор группы менять не хочет
-    # зараза ни в какую!!!
-    # Надо ботать матчасть почему так.
-    #
-    #try:
-    #    group_touple=grp.getgrnam(extended_task_record.group_name)
-    #except KeyError, e:
-    #    print "Group '%s' is not found in operating system"\
-    #                        % extended_task_record.group_name
-    #    sys.exit(2)
-    #gid=int(group_touple[2])    
-    #
-    #groups=os.getgroups()
-    #print "UID=%d Groups: %s" % (os.getuid(), str(groups))
-    #group_list=[]
-    #group_list.append(gid)
-    #os.setgroups(group_list)
-
-   
-    ##
-    ## Commented because may be it enough 
-    ## only change effective ID
-    ##
-    #try:
-    #    os.setgid(gid)
-    #except OSError, e:
-    #    print "Can't change gid from %d to %d:"\
-    #            % (os.getgid(), gid)
-    #    print e
-    #    sys.exit(3)
- 
-    #try:
-    #    os.setegid(gid)
-    #except OSError, e:
-    #    print "Can't change effective gid from %d to %d:"\
-    #            % (os.getegid(), gid)
-    #    print e
- 
-    #    sys.exit(3)
  
     try:
         os.execvp(command_line[0],command_line)

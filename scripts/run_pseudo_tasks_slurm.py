@@ -21,6 +21,7 @@ def get_submit_string(self,time_limit,duration):
     """
     s=list()
     s.append("sbatch")
+    s.append("-vv")
     s.append("--account=%s" % self.task_class)
     s.append("--comment=\"Pseudo cluster emulating task\"")
     s.append("--job-name=\"pseudo_cluster|%s|%s\"" % (self.job_id, self.job_name))
@@ -41,7 +42,7 @@ def get_submit_string(self,time_limit,duration):
     # Path to this script must be available 
     # from environment variable PATH  
     #
-    s.append("pseudo_cluster_task.sh")
+    s.append(self.path_to_task)
     s.append("-t")
     s.append(str(duration))
     s.append("-s")
@@ -114,6 +115,17 @@ def main(argv=None):
             help="префикс, по которому находится файл со статистикой"
     )
 
+    parser.add_argument(
+            '--path-to-task-script',
+            dest='path_to_task',
+            required=False,
+            default="/usr/local/bin/pseudo_cluster_task.sh",
+            help="""
+                    Путь до скрипта, который реализует тело задачи
+                    в псевдокластере.
+                 """
+    )
+
     args=parser.parse_args()
     
     #
@@ -147,7 +159,7 @@ def main(argv=None):
             if task.time_submit < end_time:
                 if task.job_id not in extended_tasks:
                     extended_task=Extended_task_record()
-                    extended_task.fill_by_task(task)
+                    extended_task.fill_by_task(task,args.path_to_task)
                     actions_list.register_action(extended_task,"submit")
                     extended_tasks[task.job_id]=extended_task
             
