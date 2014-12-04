@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 from pseudo_cluster.task import Task_record
 from pseudo_cluster.tasks_list import Tasks_list
+from pseudo_cluster.statistics_analyzer import Statistics_analyzer
 
 class StatisticsCounter(object):
     """
@@ -309,9 +310,14 @@ def main(argv=None):
 
 
     args=parser.parse_args()
+
+    analyzer=Statistics_analyzer()
+    print analyzer.get_metric_description("average_queue_time")
+
+
     args.unit_time = float(args.unit_time)
     args.compress = float(args.compress)
-
+    
     task_list = Tasks_list()
     task_list.read_statistics_from_file(args.prefix)
 
