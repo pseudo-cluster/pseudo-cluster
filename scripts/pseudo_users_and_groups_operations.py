@@ -44,6 +44,15 @@ def main(argv=None):
 
     args=parser.parse_args()
 
+    if os.geteuid() != 0:
+        print """
+                Данная программа требует 
+                полномочий пользователя root.
+
+                Запустите её от имени пользователя root,
+                либо с использованием команды sudo.
+              """
+        return 2
     
     user_group_map=dict()
 
@@ -65,8 +74,9 @@ def main(argv=None):
         group=tupl[0].strip()
 
         command_line  = "groupadd --force  '%s'" % group
-        #os.system()
-        print command_line
+        if os.system(command_line):
+            return 1
+        #print command_line
     file_descr.close()
         
 
@@ -85,8 +95,9 @@ def main(argv=None):
         if groups_line != "":
             command_line+="--groups '%s'"
         command_line+=" %s" % user
-        #os.system()
-        print command_line
+        if os.system(command_line):
+            return 1
+        #print command_line
     file_descr.close()
 
     return 0

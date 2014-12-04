@@ -6,8 +6,7 @@ import sys
 import argparse
 import datetime
 import time
-import pwd
-import grp
+
 
 from pseudo_cluster.task import  Task_record
 from pseudo_cluster.tasks_list import  Tasks_list
@@ -21,7 +20,10 @@ def get_submit_string(self,time_limit,duration):
     """
     s=list()
     s.append("sbatch")
-    s.append("-vv")
+    #
+    # Uncomment for debug slurm
+    #
+    #s.append("-vv")
     s.append("--account=%s" % self.task_class)
     s.append("--comment=\"Pseudo cluster emulating task\"")
     s.append("--job-name=\"pseudo_cluster|%s|%s\"" % (self.job_id, self.job_name))
@@ -127,6 +129,16 @@ def main(argv=None):
     )
 
     args=parser.parse_args()
+
+    if os.geteuid() != 0:
+        print """
+                Данная программа требует 
+                полномочий пользователя root.
+
+                Запустите её от имени пользователя root,
+                либо с использованием команды sudo.
+              """
+        return 2
     
     #
     # Регистрация методов, которые будут вызываться для объекта
