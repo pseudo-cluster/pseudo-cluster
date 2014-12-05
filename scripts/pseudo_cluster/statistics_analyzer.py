@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import importlib
+import imp
+import sys
 
 import tasks_list
 
@@ -40,7 +41,13 @@ class Statistics_analyzer(object):
         """
         Печатает описание метрики
         """
-        module=importlib.import_module("metrics."+metric_name)
+        try:
+            print "file: %s" % "./metrics/%s.py" % metric_name
+            module=imp.load_source("metrics."+metric_name,"./metrics/%s.py" % metric_name)
+        except IOError, e:
+            print e
+            sys.exit(3)
+        
         return module.metric_description
 
     
