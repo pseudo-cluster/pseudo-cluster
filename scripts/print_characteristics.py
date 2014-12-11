@@ -260,7 +260,10 @@ def main(argv=None):
             '--metric',
             dest='metric',
             required=True,
-            help='Какую метрику следует вычислять'
+            help="""
+            Имя метрики, по которой будут производиться вычисления 
+            для файла со статистикой.
+            """
     )
    
     parser.add_argument(
@@ -272,23 +275,42 @@ def main(argv=None):
     )
 
     parser.add_argument(
-            '--unit-time',
-            dest='unit_time',
+            '--show-available-metrics',
+            dest='show_metrics',
             required=False,
-            default=3600.0,
-            help=\
-            '''
-             Сколько минут считать за единицу времени при подсчёте средней загруженности.
-             Например: 3600.0 - 2 часа
-            '''
+            default=False,
+            action='store_true',
+            help="""
+                  печатает список доступных метрик, 
+                  которые мотом можно указать опции
+                  --metric.
+                """
     )
 
     parser.add_argument(
-            '--metric-type',
-            dest='m_type',
-            required=True,
-            choices=StatisticsCounter.AVAILABLE_TYPES,
-            help='Тип собирания статистики'
+            '--show-metric-description',
+            dest='show_metric_description',
+            required=False,
+            default=False,
+            action='store_true',
+            help="""
+                  Печатает описание 
+                  конкретной метрики.
+                """
+    )
+
+    parser.add_argument(
+            '--metric-arguments',
+            dest='metric_arguments',
+            required=False,
+            default="",
+            help=\
+              """
+               Строка с параметрами, по которым
+               вычисляется конкретная метрика.
+               Желательный формат:
+                --metric-arguments="unit-time='3600',count_mode='user'"
+              """
     )
 
     parser.add_argument(
@@ -303,16 +325,23 @@ def main(argv=None):
             '--plot',
             dest='plot',
             required=False,
-            default='No',
-            help='Если равно Yes, то выводит график получившейся метрики.'
+            default=False,
+            action='store_true', 
+            help='Если опция включена, то выводит график получившейся метрики.'
     )
 
 
     args=parser.parse_args()
 
     analyzer=Statistics_analyzer()
-    print analyzer.get_metrics_list()
-    print analyzer.get_metric_description("average_queue_time")
+    
+    if args.show_metrics:
+        print analyzer.get_metrics_list()
+        return 0
+
+    if args.show_metric_description:
+        analyzer.get_metric_description(args.metric)
+        return 0
 
 
     args.unit_time = float(args.unit_time)
