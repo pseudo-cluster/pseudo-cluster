@@ -260,7 +260,6 @@ def main(argv=None):
             '--metric',
             dest='metric',
             required=True,
-            choices=StatisticsCounter.AVAILABLE_METRICS,
             help='Какую метрику следует вычислять'
     )
    
@@ -312,6 +311,7 @@ def main(argv=None):
     args=parser.parse_args()
 
     analyzer=Statistics_analyzer()
+    print analyzer.get_metrics_list()
     print analyzer.get_metric_description("average_queue_time")
 
 
