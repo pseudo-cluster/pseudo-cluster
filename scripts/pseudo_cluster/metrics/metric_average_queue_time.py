@@ -12,7 +12,7 @@ metric_description=\
     count_mode - возможные значения: (user, day, total)
 """
 
-def class Metric_counter(object):
+class Metric_counter(object):
     """
         Класс задающий метрику
     """

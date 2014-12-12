@@ -255,26 +255,20 @@ def main(argv=None):
             """,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
- 
-    parser.add_argument(
+
+    argumets_group=parser.add_mutually_exclusive_group(required=True)
+
+    argumets_group.add_argument(
             '--metric',
             dest='metric',
-            required=True,
+            required=False,
             help="""
             Имя метрики, по которой будут производиться вычисления 
             для файла со статистикой.
             """
     )
-   
-    parser.add_argument(
-            '--prefix',
-            dest='prefix',
-            required=False,
-            default='./',
-            help='префикс, по которому находится файл со статистикой'
-    )
 
-    parser.add_argument(
+    argumets_group.add_argument(
             '--show-available-metrics',
             dest='show_metrics',
             required=False,
@@ -286,6 +280,16 @@ def main(argv=None):
                   --metric.
                 """
     )
+
+   
+    parser.add_argument(
+            '--prefix',
+            dest='prefix',
+            required=False,
+            default='./',
+            help='префикс, по которому находится файл со статистикой'
+    )
+
 
     parser.add_argument(
             '--show-metric-description',

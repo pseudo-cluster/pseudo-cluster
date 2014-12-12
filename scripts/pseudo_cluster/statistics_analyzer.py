@@ -57,7 +57,6 @@ class Statistics_analyzer(object):
             sys.exit(3)
 
         try:
-            print "file: %s" % "./metrics/%s.py" % metric_name
             #module=importlib("metrics.metric_"+metric_name)
             module=imp.load_source(
                     "metrics."+metric_name,
