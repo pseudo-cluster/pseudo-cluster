@@ -290,6 +290,13 @@ def main(argv=None):
             help='префикс, по которому находится файл со статистикой'
     )
 
+    parser.add_argument(
+            '--result-file',
+            dest='result_file',
+            required=False,
+            default='result.csv',
+            help='файл, в который помещается результат вычисления метрики'
+    )
 
     parser.add_argument(
             '--show-metric-description',
@@ -326,12 +333,11 @@ def main(argv=None):
     )
 
     parser.add_argument(
-            '--plot',
+            '--plot-file',
             dest='plot',
             required=False,
-            default=False,
-            action='store_true', 
-            help='Если опция включена, то выводит график получившейся метрики.'
+            default="", 
+            help='Выводит график получившейся метрики в файл.'
     )
 
 
