@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-metric_short_description="вычисляет среднее время ожидания в очереди."
+metric_short_description=\
+        "вычисляет среднее время ожидания в очереди."
 
 metric_description=\
 """
@@ -34,7 +35,8 @@ class Metric_counter(object):
         s+="parameters=%s " % str(self.parameters)
 
     def count_values(self,compression):
-    """
-    Подсчитать и выдать число,
-    словарь значений, и т.п.
-    """
+        """
+        Подсчитать и выдать число,
+        словарь значений, и т.п.
+        """
+        return None

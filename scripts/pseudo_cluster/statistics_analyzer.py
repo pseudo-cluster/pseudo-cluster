@@ -8,6 +8,23 @@ import tasks_list
 import metrics
 
 
+def metric_module_import(metric_name):
+    """
+    импортирует модуль, который 
+    обеспечивает работу с метрикой.
+    """
+    try:
+        #module=importlib("metrics.metric_"+metric_name)
+        module=imp.load_source(
+                    "metrics."+metric_name,
+                    "%s/metric_%s.py" % (metrics.__path__[0], metric_name)
+        )
+    except IOError, e:
+        print e
+        sys.exit(3)
+    
+    return module
+
 
 class Statistics_analyzer(object):
     """
@@ -44,9 +61,15 @@ class Statistics_analyzer(object):
         Получает список доступных в 
         текущий момент метрик
         """
-        metrics_list=list()
+        metrics_list=dict()
         for module_name in metrics.__all__:
-            metrics_list.append(module_name.partition('_')[2])
+           
+            metric_name=module_name.partition('_')[2]
+            module=metric_module_import(metric_name)
+            metrics_list[metric_name]=module.metric_short_description
+
+        return metrics_list
+
 
     def get_metric_description(self,metric_name):
         """
@@ -56,15 +79,7 @@ class Statistics_analyzer(object):
             print "Metric with name '%s' is not found" % metric_name
             sys.exit(3)
 
-        try:
-            #module=importlib("metrics.metric_"+metric_name)
-            module=imp.load_source(
-                    "metrics."+metric_name,
-                    "%s/metric_%s.py" % (metrics.__path__[0], metric_name))
-        except IOError, e:
-            print e
-            sys.exit(3)
-        
+        module=metric_module_import(metric_name)
         return module.metric_description
 
     

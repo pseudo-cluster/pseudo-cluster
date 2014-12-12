@@ -346,11 +346,13 @@ def main(argv=None):
     analyzer=Statistics_analyzer()
     
     if args.show_metrics:
-        print analyzer.get_metrics_list()
+        metrics_list=analyzer.get_metrics_list()
+        for metric in metrics_list.keys():
+            print "metric '%s' - %s " % ( metric, metrics_list[metric])
         return 0
 
     if args.show_metric_description:
-        analyzer.get_metric_description(args.metric)
+        print analyzer.get_metric_description(args.metric)
         return 0
 
 
