@@ -29,8 +29,8 @@ def metric_module_import(metric_name):
 class Statistics_analyzer(object):
     """
     Класс для анализа статистики и её отображения
-    как в виде текстовых файлов,
-    так и в виде графика. 
+    в виде текстовых файлов.
+     
     Поддерживает расчёт по некоторому набору метрик.
     """
     def __init__(self):
@@ -48,13 +48,19 @@ class Statistics_analyzer(object):
         #
         # Коэффициент сжатия времени
         #
-        time_compression = 1.0
+        self.time_compression = 1
         
         #
-        # Имя файла, куда сохраняется
-        # результат вычисления метрик.
+        # Объект расчётчика метрики.
+        # импортируется из 
+        # соответствующего модуля.
         #
-        file_name= None
+        self.metric_counter=None
+
+        #
+        # вычисленные значения
+        #
+        self.counted_values = None
 
     def get_metrics_list(self):
         """
@@ -82,7 +88,25 @@ class Statistics_analyzer(object):
         module=metric_module_import(metric_name)
         return module.metric_description
 
-    
-   
+    def register_metric__counter(self, metric_name, parameters):
+        """
+        Регистрирует вычислитель метрики, по имени и параметрам. 
+        """
+        module=metric_module_import(metric_name)
+        self.metric_counter=module.Metric_counter(self.tasks_list,parameters)
+
+    def count_metric(self):
+        """
+        Вычисляет значение метрики
+        """
+        self.counted_values=metric_counter.count_values(self.compression)
+
+   def print_values(self.file_name):
+       """
+       Печатает вычисленные значения в файл
+       """
+       f=open(file_name,"w")
+       s=self.metric_counter.get_header_string()
+       f.write(s)
 
     

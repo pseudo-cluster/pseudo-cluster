@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 metric_short_description=\
         "вычисляет среднее время ожидания в очереди."
 
@@ -39,4 +41,62 @@ class Metric_counter(object):
         Подсчитать и выдать число,
         словарь значений, и т.п.
         """
+        mode=self.parameters['count_mode']
+        tmp_result=dict()
+
+        if mode == "user":
+            for task in self.tasks_list:
+                if task.user not in tmp_result.keys():
+                    tmp_result[task.user]=(datetime.timedelta(minutes=0),0)
+                if task.time_start > task.time_submit:
+                    waitings, ones = tmp_result[task.user]
+                    tmp_result[task.user]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+        
+        
+        if mode == "day":
+            for task in self.tasks_list:
+                date=task.time_submit.date()
+                if date not in tmp_result.keys():
+                    tmp_result[task.user]=(datetime.timedelta(minutes=0),0)
+                if task.time_start > task.time_submit:
+                    waitings, ones = tmp_result[date]
+                    tmp_result[date]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+
+        result=dict()
+        for key, record in tmp_result.items():
+            if record[1]:
+                ave_duration = ( record[0] * compression ) / record[1]
+                result[key]=ave_duration.total_seconds() / 60
+            else:
+                result[key] = 0
+        
+
+        return result
+
+    def get_header_string(self):
+        """
+        Выдаём строку заголовок для печати всего в 
+        .csv файл
+        """
+        mode=self.parameters['count_mode']
+        if mode == "user":
+            return "\"%s\"\t\"%s\"" % ("Users", "Duration (minutes)")
+        if mode == "day"
+            return "\"%s\"\t\"%s\"" % ("Date (YYYY-MM-DD)", "Duration (minutes)")
+
         return None
+
+    def format_row(self,key,values_row):
+        """
+        Форматирует запись к виду пригодному для печати
+        в .csv формате.
+        """
+        mode=self.parameters['count_mode']
+        if mode == "user":
+            return "\"%s\"\t%d" % (key, values_row)
+        if mode == "day"
+            return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
+
+        return None
+
+    
