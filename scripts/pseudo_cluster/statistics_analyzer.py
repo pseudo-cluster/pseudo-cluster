@@ -108,5 +108,8 @@ class Statistics_analyzer(object):
        f=open(file_name,"w")
        s=self.metric_counter.get_header_string()
        f.write(s)
-
+       for key in self.counted_values.keys():
+           s=self.metric_counter.format_row(key,counted_values[key])
+           f.write(s)
+       f.close()
     
