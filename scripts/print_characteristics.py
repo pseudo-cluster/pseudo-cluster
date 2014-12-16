@@ -368,6 +368,9 @@ def main(argv=None):
     analyzer.count_metric()
     analyzer.print_values(args.result_file)
 
+    if args.plot != "":
+        analyzer.plot_values(args.metric,args.plot)
+
     #counter = StatisticsCounter(task_list, args.unit_time, args.compress)
     #
     #print counter.calc_metric(args.metric, args.m_type, args.plot == 'Yes')

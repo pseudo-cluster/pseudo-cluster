@@ -6,6 +6,7 @@ import sys
 
 import tasks_list
 import metrics
+import statistics_plotter
 
 
 def metric_module_import(metric_name):
@@ -112,4 +113,25 @@ class Statistics_analyzer(object):
             s=self.metric_counter.format_row(key,self.counted_values[key])
             f.write(s+'\n')
         f.close()
-    
+
+    def plot_values(self,metric_name,file_name):
+        """
+        Отрисовывает график, если это необходимо. 
+        """
+        data_array=list()
+        for k,v  in self.counted_values.items():
+            array_row=list()
+            array_row.append(k)
+            #XXX may be for future
+            #for i in v:
+            #    arrary_row.append(i)
+            array_row.append(v)
+            data_array.append(array_row)
+
+        plotter=statistics_plotter.Plotter("Print values by metric '%s'" % metric_name,
+                data_array,
+                self.metric_counter.get_header_string().split('\t')
+                )
+
+        plotter.draw(file_name)
+
