@@ -101,15 +101,15 @@ class Statistics_analyzer(object):
         """
         self.counted_values=self.metric_counter.count_values(self.time_compression)
 
-    def print_values(file_name):
+    def print_values(self,file_name):
         """
         Печатает вычисленные значения в файл
         """
         f=open(file_name,"w")
         s=self.metric_counter.get_header_string()
-        f.write(s)
+        f.write(s+'\n')
         for key in self.counted_values.keys():
-            s=self.metric_counter.format_row(key,counted_values[key])
-            f.write(s)
+            s=self.metric_counter.format_row(key,self.counted_values[key])
+            f.write(s+'\n')
         f.close()
     

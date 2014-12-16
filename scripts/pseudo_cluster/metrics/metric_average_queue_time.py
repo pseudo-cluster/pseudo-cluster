@@ -27,9 +27,12 @@ class Metric_counter(object):
         self.tasks_list=tasks_list
         self.parameters=dict()
         if parameters != "":
-            for item in other_string.split(','):
+            for item in parameters.split(','):
                 pair=item.strip().split('=')
                 self.parameters[pair[0]]=pair[1].strip("'\"")
+
+        if "count_mode" not in self.parameters.keys():
+            self.parameters["count_mode"]="user"
 
     def __str__(self):
         s="package %s: Metric_counter: " % __name__
@@ -46,18 +49,18 @@ class Metric_counter(object):
 
         if mode == "user":
             for task in self.tasks_list:
-                if task.user not in tmp_result.keys():
-                    tmp_result[task.user]=(datetime.timedelta(minutes=0),0)
+                if task.user_name not in tmp_result.keys():
+                    tmp_result[task.user_name]=(datetime.timedelta(minutes=0),0)
                 if task.time_start > task.time_submit:
-                    waitings, ones = tmp_result[task.user]
-                    tmp_result[task.user]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+                    waitings, ones = tmp_result[task.user_name]
+                    tmp_result[task.user_name]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
         
         
         if mode == "day":
             for task in self.tasks_list:
                 date=task.time_submit.date()
                 if date not in tmp_result.keys():
-                    tmp_result[task.user]=(datetime.timedelta(minutes=0),0)
+                    tmp_result[date]=(datetime.timedelta(minutes=0),0)
                 if task.time_start > task.time_submit:
                     waitings, ones = tmp_result[date]
                     tmp_result[date]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
