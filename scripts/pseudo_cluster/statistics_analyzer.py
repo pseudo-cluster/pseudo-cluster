@@ -88,7 +88,7 @@ class Statistics_analyzer(object):
         module=metric_module_import(metric_name)
         return module.metric_description
 
-    def register_metric__counter(self, metric_name, parameters):
+    def register_metric_counter(self, metric_name, parameters):
         """
         Регистрирует вычислитель метрики, по имени и параметрам. 
         """

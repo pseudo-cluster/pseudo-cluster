@@ -328,7 +328,8 @@ def main(argv=None):
             '--compression',
             dest='compress',
             required=False,
-            default=1.0,
+            type=int,
+            default=1,
             help='Во сколько раз увеличивать все промежутки времени'
     )
 
@@ -357,14 +358,20 @@ def main(argv=None):
 
 
     args.unit_time = float(args.unit_time)
-    args.compress = float(args.compress)
     
-    task_list = Tasks_list()
-    task_list.read_statistics_from_file(args.prefix)
+    tasks_list = Tasks_list()
+    tasks_list.read_statistics_from_file(args.prefix)
 
-    counter = StatisticsCounter(task_list, args.unit_time, args.compress)
+    analyzer.tasks_list=tasks_list
+    analyzer.time_compression=args.compress
 
-    print counter.calc_metric(args.metric, args.m_type, args.plot == 'Yes')
+    analyzer.register_metric_counter(args.metric, args.metric_arguments)
+    analyzer.count_metric()
+    analyzer.print_values(args.result_file)
+
+    #counter = StatisticsCounter(task_list, args.unit_time, args.compress)
+    #
+    #print counter.calc_metric(args.metric, args.m_type, args.plot == 'Yes')
 
     return 0
             
