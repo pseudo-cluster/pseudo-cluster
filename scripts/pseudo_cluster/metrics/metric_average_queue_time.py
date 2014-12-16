@@ -44,6 +44,10 @@ class Metric_counter(object):
         Подсчитать и выдать число,
         словарь значений, и т.п.
         """
+        mes="\n\n\trun metric averege_queue_time:"
+        mes+="\tmetric parameters is: %s\n\n" % self.parameters
+        print mes
+
         mode=self.parameters['count_mode']
         tmp_result=dict()
 
