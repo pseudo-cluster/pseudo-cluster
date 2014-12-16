@@ -357,7 +357,6 @@ def main(argv=None):
         return 0
 
 
-    args.unit_time = float(args.unit_time)
     
     tasks_list = Tasks_list()
     tasks_list.read_statistics_from_file(args.prefix)

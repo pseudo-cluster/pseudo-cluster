@@ -99,17 +99,17 @@ class Statistics_analyzer(object):
         """
         Вычисляет значение метрики
         """
-        self.counted_values=metric_counter.count_values(self.compression)
+        self.counted_values=self.metric_counter.count_values(self.time_compression)
 
-   def print_values(self.file_name):
-       """
-       Печатает вычисленные значения в файл
-       """
-       f=open(file_name,"w")
-       s=self.metric_counter.get_header_string()
-       f.write(s)
-       for key in self.counted_values.keys():
-           s=self.metric_counter.format_row(key,counted_values[key])
-           f.write(s)
-       f.close()
+    def print_values(file_name):
+        """
+        Печатает вычисленные значения в файл
+        """
+        f=open(file_name,"w")
+        s=self.metric_counter.get_header_string()
+        f.write(s)
+        for key in self.counted_values.keys():
+            s=self.metric_counter.format_row(key,counted_values[key])
+            f.write(s)
+        f.close()
     

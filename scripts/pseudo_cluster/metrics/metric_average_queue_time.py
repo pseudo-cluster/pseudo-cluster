@@ -81,7 +81,7 @@ class Metric_counter(object):
         mode=self.parameters['count_mode']
         if mode == "user":
             return "\"%s\"\t\"%s\"" % ("Users", "Duration (minutes)")
-        if mode == "day"
+        if mode == "day":
             return "\"%s\"\t\"%s\"" % ("Date (YYYY-MM-DD)", "Duration (minutes)")
 
         return None
@@ -94,7 +94,7 @@ class Metric_counter(object):
         mode=self.parameters['count_mode']
         if mode == "user":
             return "\"%s\"\t%d" % (key, values_row)
-        if mode == "day"
+        if mode == "day":
             return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
 
         return None
