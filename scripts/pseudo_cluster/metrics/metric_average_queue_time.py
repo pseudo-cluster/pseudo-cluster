@@ -3,17 +3,17 @@
 import datetime
 
 metric_short_description=\
-        "вычисляет среднее время ожидания в очереди."
+        _("вычисляет среднее время ожидания в очереди.")
 
 metric_description=\
-"""
+_("""
 Среднее время ожидания в очереди для задач пользователя. 
 Выражает степень недовольства пользователей вычислительным 
 кластером, поскольку никому не хочется находиться в очереди долго.
 
 требует параметров:
     count_mode - возможные значения: (user, day, total)
-"""
+""")
 
 class Metric_counter(object):
     """
@@ -44,8 +44,8 @@ class Metric_counter(object):
         Подсчитать и выдать число,
         словарь значений, и т.п.
         """
-        mes="\n\n\trun metric averege_queue_time:"
-        mes+="\tmetric parameters is: %s\n\n" % self.parameters
+        mes=_("\n\n\trun metric averege_queue_time:")
+        mes+=_("\tmetric parameters is: %s\n\n") % self.parameters
         print mes
 
         mode=self.parameters['count_mode']
@@ -87,9 +87,9 @@ class Metric_counter(object):
         """
         mode=self.parameters['count_mode']
         if mode == "user":
-            return "\"%s\"\t\"%s\"" % ("Users", "Duration (minutes)")
+            return "\"%s\"\t\"%s\"" % (_("Users"), _("Duration (minutes)"))
         if mode == "day":
-            return "\"%s\"\t\"%s\"" % ("Date (YYYY-MM-DD)", "Duration (minutes)")
+            return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
 
         return None
 

@@ -7,7 +7,8 @@ import time
 import argparse
 import datetime
 import pwd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+import gettext
 
 from pseudo_cluster.task import Task_record
 from pseudo_cluster.tasks_list import Tasks_list
@@ -247,12 +248,14 @@ def main(argv=None):
     """
     if argv == None:
         argv=sys.argv
+
+    gettext.install('pseudo-cluster')
     
     parser = argparse.ArgumentParser(
-            description=\
+            description=_(
             """
             Данная программа вычисляет метрики по файлу статистики с задачами.
-            """,
+            """),
             formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -262,10 +265,10 @@ def main(argv=None):
             '--metric',
             dest='metric',
             required=False,
-            help="""
+            help=_("""
             Имя метрики, по которой будут производиться вычисления 
             для файла со статистикой.
-            """
+            """)
     )
 
     argumets_group.add_argument(
@@ -274,11 +277,11 @@ def main(argv=None):
             required=False,
             default=False,
             action='store_true',
-            help="""
+            help=_("""
                   печатает список доступных метрик, 
                   которые мотом можно указать опции
                   --metric.
-                """
+                """)
     )
 
    
@@ -287,7 +290,7 @@ def main(argv=None):
             dest='prefix',
             required=False,
             default='./',
-            help='префикс, по которому находится файл со статистикой'
+            help=_('префикс, по которому находится файл со статистикой')
     )
 
     parser.add_argument(
@@ -295,7 +298,7 @@ def main(argv=None):
             dest='result_file',
             required=False,
             default='result.csv',
-            help='файл, в который помещается результат вычисления метрики'
+            help=_('файл, в который помещается результат вычисления метрики')
     )
 
     parser.add_argument(
@@ -304,10 +307,10 @@ def main(argv=None):
             required=False,
             default=False,
             action='store_true',
-            help="""
+            help=_("""
                   Печатает описание 
                   конкретной метрики.
-                """
+                """)
     )
 
     parser.add_argument(
@@ -315,13 +318,13 @@ def main(argv=None):
             dest='metric_arguments',
             required=False,
             default="",
-            help=\
-              """
+            help=_(
+            """
                Строка с параметрами, по которым
                вычисляется конкретная метрика.
                Желательный формат:
                 --metric-arguments="unit-time='3600',count_mode='user'"
-              """
+            """)
     )
 
     parser.add_argument(
@@ -330,7 +333,7 @@ def main(argv=None):
             required=False,
             type=int,
             default=1,
-            help='Во сколько раз увеличивать все промежутки времени'
+            help=_('Во сколько раз увеличивать все промежутки времени')
     )
 
     parser.add_argument(
@@ -338,7 +341,7 @@ def main(argv=None):
             dest='plot',
             required=False,
             default="", 
-            help='Выводит график получившейся метрики в файл.'
+            help=_('Выводит график получившейся метрики в файл.')
     )
 
 
