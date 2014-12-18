@@ -1,0 +1,132 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2014-12-18 17:50+MSK\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf8\n"
+"Content-Transfer-Encoding: UTF8\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: print_characteristics.py:255
+msgid ""
+"\n"
+"            Данная программа вычисляет "
+"метрики по файлу статистики с задачами.\n"
+"            "
+msgstr ""
+
+#: print_characteristics.py:268
+msgid ""
+"\n"
+"            Имя метрики, по которой будут "
+"производиться вычисления \n"
+"            для файла со статистикой.\n"
+"            "
+msgstr ""
+
+#: print_characteristics.py:280
+msgid ""
+"\n"
+"                  печатает список доступных "
+"метрик, \n"
+"                  которые мотом можно указать "
+"опции\n"
+"                  --metric.\n"
+"                "
+msgstr ""
+
+#: print_characteristics.py:293
+msgid ""
+"префикс, по которому находится файл со "
+"статистикой"
+msgstr ""
+
+#: print_characteristics.py:301
+msgid ""
+"файл, в который помещается результат "
+"вычисления метрики"
+msgstr ""
+
+#: print_characteristics.py:310
+msgid ""
+"\n"
+"                  Печатает описание \n"
+"                  конкретной метрики.\n"
+"                "
+msgstr ""
+
+#: print_characteristics.py:321
+msgid ""
+"\n"
+"               Строка с параметрами, по которым\n"
+"               вычисляется конкретная метрика.\n"
+"               Желательный формат:\n"
+"                --metric-arguments=\"unit-time='3600',count_mode='user'\"\n"
+"            "
+msgstr ""
+
+#: print_characteristics.py:336
+msgid ""
+"Во сколько раз увеличивать все "
+"промежутки времени"
+msgstr ""
+
+#: print_characteristics.py:344
+msgid ""
+"Выводит график получившейся метрики в "
+"файл."
+msgstr ""
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:6
+msgid ""
+"вычисляет среднее время ожидания в "
+"очереди."
+msgstr ""
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:9
+msgid ""
+"\n"
+"Среднее время ожидания в очереди для "
+"задач пользователя. \n"
+"Выражает степень недовольства "
+"пользователей вычислительным \n"
+"кластером, поскольку никому не хочется "
+"находиться в очереди долго.\n"
+"\n"
+"требует параметров:\n"
+"    count_mode - возможные значения: (user, day, total)\n"
+msgstr ""
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:47
+msgid ""
+"\n"
+"\n"
+"\trun metric averege_queue_time:"
+msgstr ""
+"\n"
+"\n"
+"\tзапускаем метрику averege_queue_time:"
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:48
+msgid ""
+"\tmetric parameters is: %s\n"
+"\n"
+msgstr ""
+"\tпараметры метрики: %s\n"
+"\n"
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:90
+msgid "Users"
+msgstr "Пользователи"
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:90
+#: pseudo_cluster/metrics/metric_average_queue_time.py:92
+msgid "Duration (minutes)"
+msgstr "Продолжительность (минуты)"
+
+#: pseudo_cluster/metrics/metric_average_queue_time.py:92
+msgid "Date (YYYY-MM-DD)"
+msgstr "Дата (ГГГГ-ММ-ДД)"
