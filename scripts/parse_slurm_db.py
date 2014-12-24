@@ -8,6 +8,7 @@ import datetime
 import time
 import pwd
 import grp
+import gettext
 
 import MySQLdb
 
@@ -21,37 +22,39 @@ def main(argv=None):
     """
     if argv == None:
         argv=sys.argv
+
+    gettext.install('pseudo-cluster')
     
     parser= argparse.ArgumentParser(
-            description="""
+            description=_("""
             Данная программа делает выборку за некоторый период времени 
             из статистики запуска задач на вычислительном кластере 
             управляемым системой ведения очередей Slurm. 
             Результат помещается в несколько текстовых файлов.
-            """,
+            """),
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog="Например можно запустить так:\n  "+argv[0]
+            epilog=_("Например можно запустить так:\n  ")+argv[0]
     )
     
     parser.add_argument(
            '--from',
            dest='time_from',
            required=True,
-           help="Дата и время с которых выбирать статистику: формат YYYY-MM-DD HH:MM "
+           help=_("Дата и время с которых выбирать статистику: формат YYYY-MM-DD HH:MM ")
     )
 
     parser.add_argument(
             '--to',
             dest='time_to',
             required=True,
-            help="Дата и время до кoторых выбирать статистику: формат YYYY-MM-DD HH:MM"
+            help=_("Дата и время до кoторых выбирать статистику: формат YYYY-MM-DD HH:MM")
     )
 
     parser.add_argument(
             '--cluster',
             dest='cluster',
             required=True,
-            help="Имя кластера в базе данных slurm"
+            help=_("Имя кластера в базе данных slurm")
     )
 
     parser.add_argument(
@@ -59,7 +62,7 @@ def main(argv=None):
             dest='prefix',
             required=False,
             default="./",
-            help="префикс, по которому сохранять выборку"
+            help=_("префикс, по которому сохранять выборку")
     )
 
     parser.add_argument(
@@ -67,11 +70,11 @@ def main(argv=None):
             dest='db_passwd_file',
             required=False,
             default="db_passwd",
-            help="""
+            help=_("""
                     Путь до файла с логином и паролём пользователя, 
                     который имеет право просматривать базу данных slurm. 
                     Формат login:password
-                 """
+                 """)
     )
 
     parser.add_argument(
@@ -79,11 +82,11 @@ def main(argv=None):
             dest='db_host_and_port',
             required=False,
             default="localhost",
-            help="""
+            help=_("""
                     Имя хоста с базой данных slurm и номер порта.
                     Если порт не указан, подставляется по умолчанию
                     Формат host:port
-                 """
+                 """)
     )
    
     parser.add_argument(
@@ -91,10 +94,10 @@ def main(argv=None):
             dest='masquerade_users',
             required=False,
             default="Yes",
-            help="""
+            help=_("""
                     Если включено, все пользователи будут маскироваться 
                     под именами типа 'user123'
-                 """
+                 """)
     )
 
     parser.add_argument(
@@ -102,10 +105,10 @@ def main(argv=None):
             dest='extract_real_names',
             required=False,
             default="Yes",
-            help="""
+            help=_("""
                     Если включено, для всех пользователей и групп по 
                     идентификаторам будут искаться их имена.
-                 """
+                 """)
     )
 
     args=parser.parse_args()

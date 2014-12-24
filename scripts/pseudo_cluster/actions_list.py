@@ -4,6 +4,7 @@ import os
 import pwd
 import grp
 import sys
+import gettext
 
 import extended_task
 
@@ -28,7 +29,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
         group_touple=grp.getgrnam(extended_task_record.group_name)
     except KeyError, e:
-        print "Group '%s' is not found in operating system"\
+        print _("Group '%s' is not found in operating system")\
                             % extended_task_record.group_name
         sys.exit(2)
     gid=int(group_touple[2])    
@@ -41,7 +42,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
         os.setgid(gid)
     except OSError, e:
-        print "Can't change gid from %d to %d:"\
+        print _("Can't change gid from %d to %d:")\
                 % (os.getgid(), gid)
         print e
         sys.exit(3)
@@ -49,7 +50,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
         os.setegid(gid)
     except OSError, e:
-        print "Can't change effective gid from %d to %d:"\
+        print _("Can't change effective gid from %d to %d:")\
                 % (os.getegid(), gid)
         print e
  
@@ -58,7 +59,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
         user_touple=pwd.getpwnam(extended_task_record.user_name)
     except KeyError, e:
-        print "User '%s' is not found in operating system"\
+        print _("User '%s' is not found in operating system")\
                 % extended_task_record.user_name
         sys.exit(2)
     uid=int(user_touple[2])
@@ -67,7 +68,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
        os.setuid(uid)
     except OSError, e:
-        print "Can't change uid from %d to %d:"\
+        print _("Can't change uid from %d to %d:")\
                 % (os.getuid(), uid)
         print e
         sys.exit(3)
@@ -75,7 +76,7 @@ def prepare_child_to_run(extended_task_record, pipe, command_line):
     try:
         os.seteuid(uid)
     except OSError, e:
-        print "Can't change effective uid from %d to %d:"\
+        print _("Can't change effective uid from %d to %d:")\
                 % (os.geteuid(), uid)
         print e
         sys.exit(3)
@@ -155,7 +156,7 @@ class Scheduled_action(object):
         if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
             pass
         else:
-            print "-- Submitting for task ID '%s'|'%s' failed --"\
+            print _("-- Submitting for task ID '%s'|'%s' failed --")\
                     % ( 
                             self.extended_task_record.job_id,
                             self.extended_task_record.job_name
@@ -178,12 +179,12 @@ class Scheduled_action(object):
         #
         os.close(pipe[1])
         f=os.fdopen(pipe[0],"r")
-        print_output(f,self.extended_task_record,"-- Cancel bellow --")
+        print_output(f,self.extended_task_record,_("-- Cancel bellow --"))
         pid, status =os.wait()
         if os.WIFEXITED(status) and (os.WEXITSTATUS(status) == 0):
             pass
         else:
-            print "-- Canceling task '%s'|'%s' with actual ID '%s' failed --"\
+            print _("-- Canceling task '%s'|'%s' with actual ID '%s' failed --")\
                     % ( self.extended_task_record.job_id,
                         self.extended_task_record.job_name,
                         self.extended_task_record.actual_task_id

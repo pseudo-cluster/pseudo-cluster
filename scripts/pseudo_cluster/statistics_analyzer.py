@@ -2,7 +2,7 @@
 
 import imp
 import sys
-
+import gettext
 
 import tasks_list
 import metrics
@@ -83,7 +83,7 @@ class Statistics_analyzer(object):
         Получает описание метрики по её имени
         """
         if "metric_%s" % metric_name not in  metrics.__all__:
-            print "Metric with name '%s' is not found" % metric_name
+            print _("Metric with name '%s' is not found") % metric_name
             sys.exit(3)
 
         module=metric_module_import(metric_name)
@@ -128,7 +128,7 @@ class Statistics_analyzer(object):
             array_row.append(v)
             data_array.append(array_row)
 
-        plotter=statistics_plotter.Plotter("Print values by metric '%s'" % metric_name,
+        plotter=statistics_plotter.Plotter(_("Print values by metric '%s'") % metric_name,
                 data_array,
                 self.metric_counter.get_header_string().split('\t')
                 )

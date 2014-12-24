@@ -8,6 +8,7 @@ import time
 import datetime
 import argparse
 import string
+import gettext
 
 from pseudo_cluster.task import Task_record
 from pseudo_cluster.tasks_list import Tasks_list
@@ -39,51 +40,52 @@ def main(argv=None):
     if argv == None:
         argv = sys.argv
 
+    gettext.install('pseudo-cluster')
     
-    parser = argparse.ArgumentParser(\
-            description="""
+    parser = argparse.ArgumentParser(
+            description=_("""
                 Данная программа переводит файл со статистикой запуска задач
                 на вычислительном кластере, управляемом системой ведения очередей
                 Slurm, в формат .csv
-                """,\
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,\
+                """),
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument(\
-            '--file',\
-            dest='input',\
-            required=True,\
-            help='Название файла со статистикой'
+    parser.add_argument(
+            '--file',
+            dest='input',
+            required=True,
+            help=_('Название файла со статистикой')
     )
 
-    parser.add_argument(\
-            '--prefix',\
-            dest='prefix',\
-            required=False,\
-            default='./',\
-            help='Префикс, по которому сохранять выборку'
+    parser.add_argument(
+            '--prefix',
+            dest='prefix',
+            required=False,
+            default='./',
+            help=_('Префикс, по которому сохранять выборку')
     )
 
-    parser.add_argument(\
-            '--masquerade-users',\
-            dest='masquerade_users',\
-            required=False,\
-            default="Yes",\
-            help="""
+    parser.add_argument(
+            '--masquerade-users',
+            dest='masquerade_users',
+            required=False,
+            default="Yes",
+            help=_("""
                     Если включено, все пользователи будут маскироваться 
                     под именами типа 'user123'
-                 """
+                 """)
     )
 
-    parser.add_argument(\
-            '--extract-logins',\
-            dest='extract_real_names',\
-            required=False,\
-            default="Yes",\
-            help="""
+    parser.add_argument(
+            '--extract-logins',
+            dest='extract_real_names',
+            required=False,
+            default="Yes",
+            help=_("""
                     Если включено, для всех пользователей и групп по 
                     идентификаторам будут искаться их имена.
-                 """
+                 """)
     )
             
 
@@ -92,16 +94,21 @@ def main(argv=None):
     tasks_list = Tasks_list()
     
     global data_format
-    print 'Пожалуйста, укажите формат, в котором записаны даты во входном файле (например, в поле "Queue Date").'
-    print 'Возможные символы:'
-    print '%a - сокращённое название дня недели (Mon, Tue, ...)'
-    print '%d - номер дня в месяце (01, 4, 31, ...)'
-    print '%b - сокращённое название месяца (Mar, Jan, Dec, ...)'
-    print '%Y - номер года полностью (2014, 2012, ...)'
-    print '%X - запись времени час:минута:секунда (13:45:29, 01:11:59, ...)\n'
-    print """Например, если время записано в таком виде: "Thu 07 Mar 2013 13:45:29 MSK", 
-то нужно ввести "%a %d %b %Y %X" (без кавычек). MSK будет игнорироваться вне зависимости от формата."""
-    print 'Введите формат для даты:'
+    print _('''
+           Пожалуйста, укажите формат, в котором записаны даты во входном файле 
+           (например, в поле "Queue Date").
+           Возможные символы:
+           %a - сокращённое название дня недели (Mon, Tue, ...)
+           %d - номер дня в месяце (01, 4, 31, ...)
+           %b - сокращённое название месяца (Mar, Jan, Dec, ...)
+           %Y - номер года полностью (2014, 2012, ...)
+           %X - запись времени час:минута:секунда (13:45:29, 01:11:59, ...)
+
+           Например, если время записано в таком виде: "Thu 07 Mar 2013 13:45:29 MSK",
+           то нужно ввести "%a %d %b %Y %X" (без кавычек). MSK будет игнорироваться 
+           вне зависимости от формата.
+
+           Введите формат для даты:''')
     data_format = raw_input()
     print data_format
 
@@ -207,10 +214,10 @@ def main(argv=None):
                 if internal_group_id:
                     tasks_list.register_user_in_group(internal_user_id, internal_group_id)
                 else:
-                    tasks_list.register_user_in_group(\
-                            internal_user_id,\
-                            group_name,\
-                            internal_group=False\
+                    tasks_list.register_user_in_group(
+                            internal_user_id,
+                            group_name,
+                            internal_group=False
                     )
             else:
                 task_record.user_name = user_name
@@ -220,10 +227,10 @@ def main(argv=None):
                 if internal_user_id:
                     tasks_list.register_user_in_group(internal_user_id, internal_group_id)
                 else:
-                    tasks_list.register_user_in_group(\
-                            user_name,\
-                            internal_group_id,\
-                            internal_user=False\
+                    tasks_list.register_user_in_group(
+                            user_name,
+                            internal_group_id,
+                            internal_user=False
                     )
             else:
                 task_record.group_name = group_name
@@ -236,3 +243,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+

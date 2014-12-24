@@ -4,16 +4,16 @@
 import argparse
 import os
 import sys
-
+import gettext
 
 def create_users_and_groups(args):
     if os.path.exists(args.homes_prefix):
         if not os.path.isdir(args.homes_prefix):
-            print "path '%s' is not a directory" % args.homes_prefix
+            print _("path '%s' is not a directory") % args.homes_prefix
             return 3
     else:
         try:
-            print "make path to homes: '%s'" % args.homes_prefix
+            print _("make path to homes: '%s'") % args.homes_prefix
             os.makedirs(args.homes_prefix,0755)
         except OSError, e:
             print e
@@ -40,7 +40,7 @@ def create_users_and_groups(args):
 
         command_line  = "groupadd --force  '%s'" % group
         
-        print "create group: '%s'" % group
+        print _("create group: '%s'") % group
         if os.system(command_line):
             return 1
         #print command_line
@@ -63,7 +63,7 @@ def create_users_and_groups(args):
             command_line+="--groups '%s'"
         command_line+=" '%s'" % user
 
-        print "create user: '%s'" % user
+        print _("create user: '%s'") % user
         if os.system(command_line):
             return 1
         #print command_line
@@ -77,9 +77,9 @@ def delete_users_and_groups(args):
 
         command_line="userdel '%s'" % user
 
-        print "delete user: '%s'" % user
+        print _("delete user: '%s'") % user
         if os.system(command_line):
-            print "            warning for user '%s'" % user
+            print _("            warning for user '%s'") % user
         #print command_line
     file_descr.close()
 
@@ -90,9 +90,9 @@ def delete_users_and_groups(args):
 
         command_line  = "groupdel '%s'" % group
 
-        print "delete group: '%s'" % group
+        print _("delete group: '%s'") % group
         if os.system(command_line):
-            print "             warning for group '%s'" % group
+            print _("             warning for group '%s'") % group
         #print command_line
     file_descr.close()
 
@@ -106,17 +106,19 @@ def main(argv=None):
     if argv == None:
         argv=sys.argv
 
+    gettext.install('pseudo-cluster')
+
     parser = argparse.ArgumentParser(
             description=\
-               """
+               _("""
                Данный скрипт создаёт пользователей и группы, 
                а так же добавляет пользователей в группы. При этом
                пользователи и группы берутся из специальных файлов,
                которые предоставляется утилитами разбора статистики.
                Например утилитой parse_slurm_db.py
-               """,
+               """),
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog="Например можно запустить так:\n "+argv[0]+" --prefix /tmp/cluster_name_"
+            epilog=_("Например можно запустить так:\n ")+argv[0]+" --prefix /tmp/cluster_name_"
             )
 
     parser.add_argument(
@@ -124,7 +126,7 @@ def main(argv=None):
             dest='prefix',
             required=True,
             default="./",
-            help="префикс, по которому находятся файлы с отображениями пользователей"
+            help=_("префикс, по которому находятся файлы с отображениями пользователей")
     )
 
     parser.add_argument(
@@ -134,7 +136,7 @@ def main(argv=None):
             choices=["create","delete"],
             default="create",
             help=\
-                    """
+                    _("""
                     определяет режим в котором всё работает:
 
                         create -- создаются пользователи и группы,
@@ -143,7 +145,7 @@ def main(argv=None):
 
                         delete -- удаляются пользователи и группы,
                                   каталоги пользователей остаются неизменными.
-                    """
+                    """)
     )
 
     parser.add_argument(
@@ -151,20 +153,20 @@ def main(argv=None):
             dest='homes_prefix',
             required=False,
             default="/home/pseudo_cluster_users",
-            help="префикс, по которому находятся каталоги пользователей псевдокластера"
+            help=_("префикс, по которому находятся каталоги пользователей псевдокластера")
     )
 
 
     args=parser.parse_args()
 
     if os.geteuid() != 0:
-        print """
+        print _("""
                 Данная программа требует 
                 полномочий пользователя root.
 
                 Запустите её от имени пользователя root,
                 либо с использованием команды sudo.
-              """
+              """)
         return 2
     
     if args.mode == "create":

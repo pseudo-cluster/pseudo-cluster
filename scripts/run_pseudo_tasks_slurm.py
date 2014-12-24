@@ -6,6 +6,7 @@ import sys
 import argparse
 import datetime
 import time
+import gettext
 
 
 from pseudo_cluster.task import  Task_record
@@ -78,9 +79,11 @@ def main(argv=None):
     """
     if argv == None:
         argv=sys.argv
+
+    gettext.install('pseudo-cluster')
     
     parser= argparse.ArgumentParser(
-            description="""
+            description=_("""
             Данная программа осуществляет постановку задач в очередь Slurm.
             Список задач получается из файла статистики. При этом программа
             ставит задачу в очередь с идентификатором пользователя и группы,
@@ -88,9 +91,9 @@ def main(argv=None):
             время сжимается согласно коэффициента, и вместо реалного кода 
             программы, запускавшейся задачи запускается скрипт, который ничего
             не делает определённое количество секунд.
-            """,
+            """),
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog="Например можно запустить так:\n "+argv[0]+" --time-compress 30"
+            epilog=_("Например можно запустить так:\n ")+argv[0]+" --time-compress 30"
     )
     
     parser.add_argument(
@@ -98,7 +101,7 @@ def main(argv=None):
             dest='compress_times',
             type=int,
             required=True,
-            help="Во сколько раз сжимать время. Напиример: 10"
+            help=_("Во сколько раз сжимать время. Напиример: 10")
     )
     parser.add_argument(
             '--time-interval',
@@ -106,7 +109,7 @@ def main(argv=None):
             type=int,
             required=False,
             default=2,
-            help="Раз во сколько минут обращаться к системе ведения очередей"            
+            help=_("Раз во сколько минут обращаться к системе ведения очередей")
     )
 
     parser.add_argument(
@@ -114,7 +117,7 @@ def main(argv=None):
             dest='prefix',
             required=False,
             default="./",
-            help="префикс, по которому находится файл со статистикой"
+            help=_("префикс, по которому находится файл со статистикой")
     )
 
     parser.add_argument(
@@ -122,22 +125,22 @@ def main(argv=None):
             dest='path_to_task',
             required=False,
             default="/usr/local/bin/pseudo_cluster_task.sh",
-            help="""
+            help=_("""
                     Путь до скрипта, который реализует тело задачи
                     в псевдокластере.
-                 """
+                 """)
     )
 
     args=parser.parse_args()
 
     if os.geteuid() != 0:
-        print """
+        print _("""
                 Данная программа требует 
                 полномочий пользователя root.
 
                 Запустите её от имени пользователя root,
                 либо с использованием команды sudo.
-              """
+              """)
         return 2
     
     #
@@ -187,7 +190,7 @@ def main(argv=None):
         delay_value = datetime.datetime.utcnow()- begin_actions_time
         if delay_value < datetime.timedelta(minutes=args.interval):
             how_much_sleep=args.interval*60-delay_value.total_seconds()
-            print ("will sleep %d" % how_much_sleep)
+            print (_("will sleep %d") % how_much_sleep)
             time.sleep(how_much_sleep)
             
         begin_time=end_time
