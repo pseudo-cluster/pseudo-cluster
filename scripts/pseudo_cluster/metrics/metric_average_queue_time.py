@@ -38,13 +38,18 @@ class Metric_counter(object):
         s="package %s: Metric_counter: " % __name__
         s+="tasks_list=%s, " % str(self.tasks_list)
         s+="parameters=%s " % str(self.parameters)
+        return s
+
+    def get_metric_name(self):
+        names=__name__.split('.')
+        return names[1]
 
     def count_values(self,compression):
         """
         Подсчитать и выдать число,
         словарь значений, и т.п.
         """
-        mes=_("\n\n\trun metric averege_queue_time:")
+        mes=_("\n\n\trun metric %s:") % self.get_metric_name() 
         mes+=_("\tmetric parameters is: %s\n\n") % self.parameters
         print mes
 

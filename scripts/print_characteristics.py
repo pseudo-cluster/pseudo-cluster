@@ -250,7 +250,7 @@ def main(argv=None):
         argv=sys.argv
 
     gettext.install('pseudo-cluster')
-    
+
     parser = argparse.ArgumentParser(
             description=_(
             """
