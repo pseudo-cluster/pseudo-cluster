@@ -74,6 +74,14 @@ class Metric_counter(object):
                     waitings, ones = tmp_result[date]
                     tmp_result[date]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
 
+        if mode == "total":
+            tmp_result["total"]=(datetime.timedelta(minutes=0),0)
+            for task in self.tasks_list:
+                date=task.time_submit.date()
+                if task.time_start > task.time_submit:
+                    waitings, ones = tmp_result["total"]
+                    tmp_result["total"]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+
         result=dict()
         for key, record in tmp_result.items():
             if record[1]:
@@ -95,6 +103,8 @@ class Metric_counter(object):
             return "\"%s\"\t\"%s\"" % (_("Users"), _("Duration (minutes)"))
         if mode == "day":
             return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
+        if mode == "total":
+            return "\"%s\"\t\"%s\"" % (_("Totally"), _("Duration (minutes)"))
 
         return None
 
@@ -108,6 +118,8 @@ class Metric_counter(object):
             return "\"%s\"\t%d" % (key, values_row)
         if mode == "day":
             return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
+        if mode == "total":
+            return "\"%s\"\t%d" % (key, values_row)
 
         return None
 
