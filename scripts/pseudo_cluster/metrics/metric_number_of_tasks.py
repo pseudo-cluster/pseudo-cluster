@@ -83,6 +83,22 @@ class Metric_counter(object):
 
         return None
 
+    def get_draw_type(self):
+        """
+        Выдаёт:
+            chart - если отображаемо как набор столбиков,
+            plot - если кривая y=f(x)
+        """
+        mode=self.parameters['count_mode']
+        if mode == "user":
+            return "chart"
+        if mode == "day":
+            return "plot"
+
+        return None
+
+
+
     def format_row(self,key,values_row):
         """
         Форматирует запись к виду пригодному для печати

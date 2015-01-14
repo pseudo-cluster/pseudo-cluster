@@ -7,10 +7,11 @@ class Plotter(object):
     Класс для отрисовки графиков
     """
 
-    def __init__(self,title,data,labels):
+    def __init__(self,title,data,labels,draw_type):
         self.title=title
         self.data=data
         self.labels=labels
+        self.draw_type=draw_type
 
     def draw(self,file_name):
         """
@@ -21,6 +22,24 @@ class Plotter(object):
         plt.xlabel(self.labels[0])
         plt.ylabel(self.labels[1])
 
-        plt.plot(self.data)
+
+        if self.draw_type == 'chart':
+            fig,ax = plt.subplots()
+            ax.set_xticklabels(self.data.keys())
+            ax.bar(range(0,len(self.data)),self.data.values())
+
+        if self.draw_type == 'plot':
+            data_array=list()
+            for k,v  in self.counted_values.items():
+                array_row=list()
+                array_row.append(k)
+                #XXX may be for future
+                #for i in v:
+                #    arrary_row.append(i)
+                array_row.append(v)
+                data_array.append(array_row)
+
+            plt.plot(self.data)
+
         plt.show()
 
