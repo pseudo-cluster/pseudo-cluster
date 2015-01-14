@@ -41,8 +41,7 @@ class Metric_counter(object):
         return s
 
     def get_metric_name(self):
-        names=__name__.split('.')
-        return names[1]
+        return __name__
 
     def calc_average_congestion(self, tasks, unit_time, compr):
         """

@@ -17,7 +17,7 @@ def metric_module_import(metric_name):
     try:
         #module=importlib("metrics.metric_"+metric_name)
         module=imp.load_source(
-                    "metrics."+metric_name,
+                    metric_name,
                     "%s/metric_%s.py" % (metrics.__path__[0], metric_name)
         )
     except IOError, e:

@@ -42,8 +42,7 @@ class Metric_counter(object):
         return s
 
     def get_metric_name(self):
-        names=__name__.split('.')
-        return names[1]
+        return __name__
 
 
     def count_values(self, compression):
