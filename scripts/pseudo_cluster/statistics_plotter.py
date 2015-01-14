@@ -30,7 +30,7 @@ class Plotter(object):
 
         if self.draw_type == 'plot':
             data_array=list()
-            for k,v  in self.counted_values.items():
+            for k,v  in self.data.items():
                 array_row=list()
                 array_row.append(k)
                 #XXX may be for future
@@ -39,7 +39,7 @@ class Plotter(object):
                 array_row.append(v)
                 data_array.append(array_row)
 
-            plt.plot(self.data)
+            plt.plot(data_array)
 
         plt.show()
 
