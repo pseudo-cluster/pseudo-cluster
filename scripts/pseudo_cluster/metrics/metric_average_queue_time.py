@@ -12,7 +12,7 @@ _("""
 кластером, поскольку никому не хочется находиться в очереди долго.
 
 требует параметров:
-    count_mode - возможные значения: (user, day, total)
+    count_mode - возможные значения: (user, group, class, day, total)
 """)
 
 class Metric_counter(object):
@@ -62,8 +62,24 @@ class Metric_counter(object):
                 if task.time_start > task.time_submit:
                     waitings, ones = tmp_result[task.user_name]
                     tmp_result[task.user_name]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
-        
-        
+ 
+        if mode == "group":
+            for task in self.tasks_list:
+                if task.group_name not in tmp_result.keys():
+                    tmp_result[task.group_name]=(datetime.timedelta(minutes=0),0)
+                if task.time_start > task.time_submit:
+                    waitings, ones = tmp_result[task.group_name]
+                    tmp_result[task.group_name]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+       
+        if mode == "class":
+            for task in self.tasks_list:
+                if task.task_class not in tmp_result.keys():
+                    tmp_result[task.task_class]=(datetime.timedelta(minutes=0),0)
+                if task.time_start > task.time_submit:
+                    waitings, ones = tmp_result[task.task_class]
+                    tmp_result[task.task_class]=( waitings + (task.time_start - task.time_submit) , ones + 1 )
+       
+       
         if mode == "day":
             for task in self.tasks_list:
                 date=task.time_submit.date()
@@ -100,6 +116,10 @@ class Metric_counter(object):
         mode=self.parameters['count_mode']
         if mode == "user":
             return "\"%s\"\t\"%s\"" % (_("Users"), _("Duration (minutes)"))
+        if mode == "group":
+            return "\"%s\"\t\"%s\"" % (_("Groups"), _("Duration (minutes)"))
+        if mode == "class":
+            return "\"%s\"\t\"%s\"" % (_("Classes"), _("Duration (minutes)"))
         if mode == "day":
             return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
         if mode == "total":
@@ -114,7 +134,7 @@ class Metric_counter(object):
             plot - если кривая y=f(x)
         """
         mode=self.parameters['count_mode']
-        if mode == "user":
+        if (mode == "user") or (mode == "group") or (mode == "class"):
             return "chart"
         if mode == "day":
             return "plot"
@@ -128,7 +148,7 @@ class Metric_counter(object):
         в .csv формате.
         """
         mode=self.parameters['count_mode']
-        if mode == "user":
+        if (mode == "user") or (mode == "group") or (mode == "class"):
             return "\"%s\"\t%d" % (key, values_row)
         if mode == "day":
             return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
