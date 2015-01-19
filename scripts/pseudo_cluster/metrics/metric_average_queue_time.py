@@ -81,8 +81,9 @@ class Metric_counter(object):
        
        
         if mode == "day":
+            first_day=self.tasks_list[0].time_submit.date()
             for task in self.tasks_list:
-                date=task.time_submit.date()
+                date=(task.time_submit.date()-first_day).days
                 if date not in tmp_result.keys():
                     tmp_result[date]=(datetime.timedelta(minutes=0),0)
                 if task.time_start > task.time_submit:
@@ -151,7 +152,7 @@ class Metric_counter(object):
         if (mode == "user") or (mode == "group") or (mode == "class"):
             return "\"%s\"\t%d" % (key, values_row)
         if mode == "day":
-            return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
+            return "\"%s\"\t%d" % (key, values_row)
         if mode == "total":
             return "\"%s\"\t%d" % (key, values_row)
 
