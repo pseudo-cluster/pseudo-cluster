@@ -367,6 +367,11 @@ def main(argv=None):
     analyzer.tasks_list=tasks_list
     analyzer.time_compression=args.compress
 
+    if args.plot != "":
+        args.metric_arguments+=",plot_format='true'"
+    else:
+        args.metric_arguments+=",plot_format='false'"
+
     analyzer.register_metric_counter(args.metric, args.metric_arguments)
     analyzer.count_metric()
     analyzer.print_values(args.result_file)
