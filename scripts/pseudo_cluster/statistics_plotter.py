@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import matplotlib.pyplot as plt
+import pygal as pygal
 
 class Plotter(object):
     """
@@ -18,28 +18,24 @@ class Plotter(object):
         Отрисовывает в файл, или 
         в окно, если имя файла не задано.
         """
-        plt.title(self.title)
-        plt.xlabel(self.labels[0])
-        plt.ylabel(self.labels[1])
+        plt=None
+        #plt.title(self.title)
+        #plt.xlabel(self.labels[0])
+        #plt.ylabel(self.labels[1])       
 
 
         if self.draw_type == 'chart':
-            fig,ax = plt.subplots()
-            ax.set_xticklabels(self.data.keys())
-            ax.bar(range(0,len(self.data)),self.data.values())
+            plt=pygal.Bar()
+            #plt.x_labels(self.data.keys())
+            plt.add(self.labels[1],self.data.values())            
 
         if self.draw_type == 'plot':
+            plt=pygal.XY()
             data_array=list()
             for k,v  in self.data.items():
-                array_row=list()
-                array_row.append(float(k))
-                #XXX may be for future
-                #for i in v:
-                #    arrary_row.append(i)
-                array_row.append(float(v))
-                data_array.append(array_row)
+                data_array.append((float(k),float(v)))
+            plt.add(self.labels[1], data_array )
 
-            plt.plot(data_array)
-
-        plt.show()
+        plt.title=self.title
+        plt.render_to_file(file_name)
 
