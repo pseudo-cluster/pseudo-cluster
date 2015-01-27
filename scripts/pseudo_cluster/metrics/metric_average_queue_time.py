@@ -126,7 +126,10 @@ class Metric_counter(object):
         if mode == "class":
             return "\"%s\"\t\"%s\"" % (_("Classes"), _("Duration (minutes)"))
         if mode == "day":
-            return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
+            if self.parameters['plot_format'] == 'true':
+                return "\"%s\"\t\"%s\"" % (_("Day number"), _("Duration (minutes)"))
+            else:
+                return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
         if mode == "total":
             return "\"%s\"\t\"%s\"" % (_("Totally"), _("Duration (minutes)"))
 
