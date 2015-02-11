@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import time
 
 metric_short_description=\
         _("вычисляет среднюю заполненность вычислительной системы.")
@@ -82,13 +83,13 @@ class Metric_counter(object):
         print mes
 
         mode=self.parameters['count_mode']
-        ut = self.parameters['unit_time']
+        ut = self.parameters.get('unit_time', 1.0)
         tmp_result=dict()
 
         if mode == "user":
             users = {t.user_name for t in self.tasks_list}
-            for u in user:
-                tmp_result[user] = self.calc_average_congestion(list(filter(lambda x: x.user_name == u, self.tasks_list)), ut, compression)
+            for u in users:
+                tmp_result[u] = self.calc_average_congestion(list(filter(lambda x: x.user_name == u, self.tasks_list)), ut, compression)
 
         
         if mode == "day":
@@ -140,10 +141,10 @@ class Metric_counter(object):
         """
         mode=self.parameters['count_mode']
         if mode == "user":
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
         if mode == "day":
-            return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
+            return "\"%s\"\t%f" % (key.strftime("%Y-%m-%d"), values_row)
         if mode == "total":
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
 
         return None
