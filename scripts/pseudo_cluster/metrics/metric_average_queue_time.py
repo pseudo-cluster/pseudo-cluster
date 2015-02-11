@@ -157,14 +157,14 @@ class Metric_counter(object):
         """
         mode=self.parameters['count_mode']
         if (mode == "user") or (mode == "group") or (mode == "class"):
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
         if mode == "day":
             if self.parameters['plot_format'] == 'true':
-                return "\"%s\"\t%d" % (key, values_row)
+                return "\"%s\"\t%f" % (key, values_row)
             else:
-                return "\"%s\"\t%d" % (key.strftime("%Y-%m-%d"), values_row)
+                return "\"%s\"\t%f" % (key.strftime("%Y-%m-%d"), values_row)
         if mode == "total":
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
 
         return None
 
