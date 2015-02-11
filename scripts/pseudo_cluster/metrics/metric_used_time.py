@@ -25,6 +25,7 @@ class Metric_counter(object):
         self.tasks_list=tasks_list
         self.parameters=dict()
         if parameters != "":
+            print parameters
             for item in parameters.split(','):
                 pair=item.strip().split('=')
                 self.parameters[pair[0]]=pair[1].strip("'\"")
@@ -77,8 +78,8 @@ class Metric_counter(object):
 
         if mode == "user":
             users = {t.user_name for t in self.tasks_list}
-            for u in user:
-                tmp_result[user] = self.calc_used_time(list(filter(lambda x: x.user_name == u, self.tasks_list)))
+            for u in users:
+                tmp_result[u] = self.calc_used_time(list(filter(lambda x: x.user_name == u, self.tasks_list)))
 
         
         if mode == "day":
@@ -131,10 +132,10 @@ class Metric_counter(object):
         """
         mode=self.parameters['count_mode']
         if mode == "user":
-            return "\"%s\"\t%d\t%d" % (key, values_row[0], values_row[1])
+            return "\"%s\"\t%f\t%d" % (key, values_row[0], values_row[1])
         if mode == "day":
-            return "\"%s\"\t%d\t%d" % (key.strftime("%Y-%m-%d"), values_row[0], values_row[1])
+            return "\"%s\"\t%f\t%d" % (key.strftime("%Y-%m-%d"), values_row[0], values_row[1])
         if mode == "total":
-            return "\"%s\"\t%d\t%d" % (key, values_row[0], values_row[1])
+            return "\"%s\"\t%f\t%d" % (key, values_row[0], values_row[1])
 
         return None
