@@ -83,7 +83,11 @@ class Metric_counter(object):
         if mode == "day":
             first_day=self.tasks_list[0].time_submit.date()
             for task in self.tasks_list:
-                date=(task.time_submit.date()-first_day).days
+                if self.parameters['plot_format'] == 'true':
+                    date=(task.time_submit.date()-first_day).days
+                else:
+                    date=task.time_submit.date()
+
                 if date not in tmp_result.keys():
                     tmp_result[date]=(datetime.timedelta(minutes=0),0)
                 if task.time_start > task.time_submit:
@@ -122,7 +126,10 @@ class Metric_counter(object):
         if mode == "class":
             return "\"%s\"\t\"%s\"" % (_("Classes"), _("Duration (minutes)"))
         if mode == "day":
-            return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
+            if self.parameters['plot_format'] == 'true':
+                return "\"%s\"\t\"%s\"" % (_("Day number"), _("Duration (minutes)"))
+            else:
+                return "\"%s\"\t\"%s\"" % (_("Date (YYYY-MM-DD)"), _("Duration (minutes)"))
         if mode == "total":
             return "\"%s\"\t\"%s\"" % (_("Totally"), _("Duration (minutes)"))
 
@@ -150,11 +157,14 @@ class Metric_counter(object):
         """
         mode=self.parameters['count_mode']
         if (mode == "user") or (mode == "group") or (mode == "class"):
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
         if mode == "day":
-            return "\"%s\"\t%d" % (key, values_row)
+            if self.parameters['plot_format'] == 'true':
+                return "\"%s\"\t%f" % (key, values_row)
+            else:
+                return "\"%s\"\t%f" % (key.strftime("%Y-%m-%d"), values_row)
         if mode == "total":
-            return "\"%s\"\t%d" % (key, values_row)
+            return "\"%s\"\t%f" % (key, values_row)
 
         return None
 
