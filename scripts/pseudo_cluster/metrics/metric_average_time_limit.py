@@ -3,11 +3,12 @@
 import datetime
 
 metric_short_description=\
-        _("вычисляет среднее число запрашиваемых процессоров.")
+        _("вычисляет среднее ограничение времени устанавлеваемое пользователем.")
 
 metric_description=\
 _("""
-Среднее число запрашиваемых задачей процессоров. 
+Среднее ограничение на продолжительность выполнения задачи,
+устанавливаемое пользоватем. 
 Ничего особо не выражает, нужно для задач машинного обучения.
 
 требует параметров:
@@ -57,26 +58,26 @@ class Metric_counter(object):
         if mode == "user":
             for task in self.tasks_list:
                 if task.user_name not in tmp_result.keys():
-                    tmp_result[task.user_name]=(task.required_cpus,1)
+                    tmp_result[task.user_name]=(task.time_limit,1)
                 else:
-                    cpus, ones = tmp_result[task.user_name]
-                    tmp_result[task.user_name]=(cpus + task.required_cpus, ones + 1)
+                    time_limit, ones = tmp_result[task.user_name]
+                    tmp_result[task.user_name]=(time_limit + task.time_limit, ones + 1)
 
         if mode == "group":
             for task in self.tasks_list:
                 if task.group_name not in tmp_result.keys():
-                    tmp_result[task.group_name]=(task.required_cpus,1)
+                    tmp_result[task.group_name]=(task.time_limit,1)
                 else:
-                    cpus, ones = tmp_result[task.group_name]
-                    tmp_result[task.group_name]=(cpus + task.required_cpus, ones + 1)
+                    time_limit, ones = tmp_result[task.group_name]
+                    tmp_result[task.group_name]=(time_limit + task.time_limit, ones + 1)
 
         if mode == "class":
             for task in self.tasks_list:
                 if task.task_class not in tmp_result.keys():
-                    tmp_result[task.task_class]=(task.required_cpus,1)
+                    tmp_result[task.task_class]=(task.time_limit,1)
                 else:
-                    cpus, ones = tmp_result[task.task_class]
-                    tmp_result[task.task_class]=(cpus + task.required_cpus, ones + 1)
+                    time_limit, ones = tmp_result[task.task_class]
+                    tmp_result[task.task_class]=(time_limit + task.time_limit, ones + 1)
       
         if mode == "day":
             first_day=self.tasks_list[0].time_submit.date()
@@ -87,17 +88,17 @@ class Metric_counter(object):
                     date=task.time_submit.date()
 
                 if date not in tmp_result.keys():
-                    tmp_result[date]=(task.required_cpus,1)
+                    tmp_result[date]=(task.time_limit,1)
                 else:
-                    cpus, ones = tmp_result[date]
-                    tmp_result[date]=(cpus + task.required_cpus , ones + 1)
+                    time_limit, ones = tmp_result[date]
+                    tmp_result[date]=(time_limit + task.time_limit , ones + 1)
 
         if mode == "total":
             tmp_result["total"]=(0, 0)
-            cpus=0;
+            time_limit=0;
             for task in self.tasks_list:
-                    cpus += task.required_cpus;
-            tmp_result["total"]=(cpus , len(self.tasks_list))
+                    time_limit += task.time_limit;
+            tmp_result["total"]=(time_limit , len(self.tasks_list))
         
         #TODO
         # Not optimal
@@ -117,18 +118,18 @@ class Metric_counter(object):
         format_str = "\"%s\"\t\"%s\"\t\"%s\""
         mode=self.parameters['count_mode']
         if mode == "user":
-            return format_str % (_("Users"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Users"), _("Average time_limit"), _("Totally tasks"))
         if mode == "group":
-            return format_str % (_("Groups"), _("Average cpus"),  _("Totally tasks"))
+            return format_str % (_("Groups"), _("Average time_limit"),  _("Totally tasks"))
         if mode == "class":
-            return format_str % (_("Classes"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Classes"), _("Average time_limit"), _("Totally tasks"))
         if mode == "day":
             if self.parameters['plot_format'] == 'true':
-                return format_str % (_("Day number"), _("Average cpus"),  _("Totally tasks"))
+                return format_str % (_("Day number"), _("Average time_limit"),  _("Totally tasks"))
             else:
-                return format_str % (_("Date (YYYY-MM-DD)"), _("Average cpus"), _("Totally tasks"))
+                return format_str % (_("Date (YYYY-MM-DD)"), _("Average time_limit"), _("Totally tasks"))
         if mode == "total":
-            return format_str % (_("Totally"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Totally"), _("Average time_limit"), _("Totally tasks"))
 
         return None
 

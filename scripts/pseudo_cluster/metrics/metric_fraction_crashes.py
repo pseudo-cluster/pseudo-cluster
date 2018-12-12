@@ -3,11 +3,13 @@
 import datetime
 
 metric_short_description=\
-        _("вычисляет среднее число запрашиваемых процессоров.")
+        _("вычислят долю неудачно завершившихся задач")
 
 metric_description=\
 _("""
-Среднее число запрашиваемых задачей процессоров. 
+Доля павших, или завершившихся по тайм лимиту задач по отношению ко всем задачам 
+пользователя/группы и. т.п. (в зависимости от параметра).
+
 Ничего особо не выражает, нужно для задач машинного обучения.
 
 требует параметров:
@@ -54,58 +56,55 @@ class Metric_counter(object):
         mode=self.parameters['count_mode']
         tmp_result=dict()
 
-        if mode == "user":
-            for task in self.tasks_list:
-                if task.user_name not in tmp_result.keys():
-                    tmp_result[task.user_name]=(task.required_cpus,1)
-                else:
-                    cpus, ones = tmp_result[task.user_name]
-                    tmp_result[task.user_name]=(cpus + task.required_cpus, ones + 1)
-
-        if mode == "group":
-            for task in self.tasks_list:
-                if task.group_name not in tmp_result.keys():
-                    tmp_result[task.group_name]=(task.required_cpus,1)
-                else:
-                    cpus, ones = tmp_result[task.group_name]
-                    tmp_result[task.group_name]=(cpus + task.required_cpus, ones + 1)
-
-        if mode == "class":
-            for task in self.tasks_list:
-                if task.task_class not in tmp_result.keys():
-                    tmp_result[task.task_class]=(task.required_cpus,1)
-                else:
-                    cpus, ones = tmp_result[task.task_class]
-                    tmp_result[task.task_class]=(cpus + task.required_cpus, ones + 1)
-      
-        if mode == "day":
-            first_day=self.tasks_list[0].time_submit.date()
-            for task in self.tasks_list:
-                if self.parameters['plot_format'] == 'true':
-                    date=(task.time_submit.date()-first_day).days
-                else:
-                    date=task.time_submit.date()
-
-                if date not in tmp_result.keys():
-                    tmp_result[date]=(task.required_cpus,1)
-                else:
-                    cpus, ones = tmp_result[date]
-                    tmp_result[date]=(cpus + task.required_cpus , ones + 1)
-
         if mode == "total":
             tmp_result["total"]=(0, 0)
-            cpus=0;
+            fails=0
+
             for task in self.tasks_list:
-                    cpus += task.required_cpus;
+                task_fail_flag = 0
+
+                if task.task_state in ["failed", "time_left", "node_fail"]:
+                    task_fail_flag = 1
+
+                fails += task_fail_flag
+
             tmp_result["total"]=(cpus , len(self.tasks_list))
-        
+        else:
+
+            for task in self.tasks_list:
+                task_fail_flag = 0
+                key = None
+                
+                
+                if task.task_state in ["failed", "time_left", "node_fail"]:
+                    task_fail_flag = 1
+               
+                if mode == "user":
+                    key = task.user_name
+                if mode == "group":
+                    key = task.group_name
+                if mode == "class":
+                    key = task.task_class
+                if mode == "day":
+                    if self.parameters['plot_format'] == 'true':
+                        key=(task.time_submit.date()-first_day).days
+                    else:
+                        key=task.time_submit.date()
+               
+                if key not in tmp_result.keys():
+                    tmp_result[task.user_name]=(task_fail_flag,1)
+                else:
+                    fails, ones = tmp_result[key]
+                    tmp_result[key]=(task_fail_flag + fails, ones + 1)
+
+       
         #TODO
         # Not optimal
         # better to return modified tmp_result
         #
         result=dict()
         for key, record in tmp_result.items():
-                result[key] =  (record[0] / float(record[1]), record[1])
+                result[key] = (record[0] / float(record[1]), record[1])
         
         return result
 
@@ -117,18 +116,18 @@ class Metric_counter(object):
         format_str = "\"%s\"\t\"%s\"\t\"%s\""
         mode=self.parameters['count_mode']
         if mode == "user":
-            return format_str % (_("Users"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Users"), _("Average num fails"), _("Totally tasks"))
         if mode == "group":
-            return format_str % (_("Groups"), _("Average cpus"),  _("Totally tasks"))
+            return format_str % (_("Groups"), _("Average num fails"),  _("Totally tasks"))
         if mode == "class":
-            return format_str % (_("Classes"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Classes"), _("Average num fails"), _("Totally tasks"))
         if mode == "day":
             if self.parameters['plot_format'] == 'true':
-                return format_str % (_("Day number"), _("Average cpus"),  _("Totally tasks"))
+                return format_str % (_("Day number"), _("Average num fails"),  _("Totally tasks"))
             else:
-                return format_str % (_("Date (YYYY-MM-DD)"), _("Average cpus"), _("Totally tasks"))
+                return format_str % (_("Date (YYYY-MM-DD)"), _("Average num fails"), _("Totally tasks"))
         if mode == "total":
-            return format_str % (_("Totally"), _("Average cpus"), _("Totally tasks"))
+            return format_str % (_("Totally"), _("Average num fails"), _("Totally tasks"))
 
         return None
 
